@@ -42,10 +42,11 @@ def rule_match_goal_tree(hypothesis, rules):
     rule_subtrees = []
     for rule in rules:
         # here we assume consequent only contains simple leaf node, need more logic to handle complex expressions
-        binding = match(rule.consequent()[0], hypothesis)
-        if binding != None:
-            sub_tree = antecedent_goal_tree(rule, rules, binding)
-            rule_subtrees.append(sub_tree)
+        for consequent in rule.consequent():
+            binding = match(consequent, hypothesis)
+            if binding != None:
+                sub_tree = antecedent_goal_tree(rule, rules, binding)
+                rule_subtrees.append(sub_tree)
     if len(rule_subtrees) > 0:
         return OR([hypothesis] + rule_subtrees)    #always including self as part of the rule tree
     else:
