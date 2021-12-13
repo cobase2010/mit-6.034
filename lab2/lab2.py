@@ -65,10 +65,10 @@ def bfs(graph, start, goal):
         if current_node == goal:
             return path
         else:
+            extended_list.append(current_node)
             connected_nodes = graph.get_connected_nodes(current_node)
             for node in connected_nodes:
                 if node not in extended_list:
-                    extended_list.append(node)
                     agenda = agenda + [path + [node]]  # add to the tail of the agenda
     return [] # didn't find path
                     
@@ -88,10 +88,10 @@ def dfs(graph, start, goal):
         if current_node == goal:
             return path
         else:
+            extended_list.append(current_node)
             connected_nodes = graph.get_connected_nodes(current_node)
             for node in reversed(connected_nodes):   # Add the paths in reversed order to the front to preserved nature tree order
                 if node not in extended_list:
-                    extended_list.append(node)
                     agenda = [path + [node]] + agenda # add to the front of the agenda
     return [] # didn't find path
 
@@ -199,10 +199,10 @@ def a_star(graph, start, goal):
             # print "num iterations", count
             return path
         else:
+            extended_list.append(current_node)
             connected_nodes = graph.get_connected_nodes(current_node)
             for node in connected_nodes:
                 if node not in extended_list:
-                    extended_list.append(node)
                     agenda.append(path + [node])  # add to the tail of the agenda
             # for branch and bound, just sort the whole agenda based on the actual distance
             agenda.sort(key=lambda p: graph.get_heuristic(p[-1], goal) + path_length(graph, p))
