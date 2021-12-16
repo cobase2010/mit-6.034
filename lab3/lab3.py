@@ -341,8 +341,10 @@ def better_evaluate2(board):
     * establish 7 formation
     """
     score = 0
-    SEVEN_BONUS = 100
+    SEVEN_BONUS = 50
     CHAIN_BASE = 10
+    ODD_EVEN = 10
+    CENTER_BONUS = 10
     
     if board.is_game_over():
     
@@ -440,15 +442,15 @@ def better_evaluate2(board):
         for row in range(6):
             for col in range(7):
                 if board.get_cell(row, col) == board.get_current_player_id():
-                    score -= abs(3-col) * 10
+                    score -= abs(3-col) * CENTER_BONUS
                     # odd/even rule
                     if row % 2 == 1 and board.get_current_player_id() == 1:
-                        score += 3 * (row + 1)
+                        score += ODD_EVEN * (row + 1)
                 elif board.get_cell(row, col) == board.get_other_player_id():
-                    score += abs(3-col) * 10
+                    score += abs(3-col) * CENTER_BONUS
                     # Player 2 prefers even rows
                     if row % 2 == 0 and board.get_current_player_id() == 2:
-                        score += 3 * (row + 1)
+                        score += ODD_EVEN * (row + 1)
 
     return score
 
@@ -567,7 +569,8 @@ def tournament(total_rounds, player_list):
     print print_results(result_list)
                         
     
-tournament(1, ["basic_player", "your_player", "your_player2"])
+# tournament(1, ["basic_player", "your_player", "your_player2"])
+tournament(1, ["your_player", "your_player2"])
 
 
 COMPETE = (False)
@@ -589,15 +592,38 @@ Better_Evaluate2 vs Better_Evaluate: Games 8 Win: 6 Loss: 2 Tie: 0 Score: 4.0
 Better_Evaluate2 vs Basic using all three boards:
     Games 12 Win: 5 Loss: 4 Ties: 3 Final score 2.5
 
+
 Final Result after 18 games between basic, evaluate, evaluate2 players:
+
+SEVEN_BONUS = 100
+CHAIN_BASE = 10
+ODD_EVEN = 5
+CENTER_BONUS = 3
 
         0       1       2       score
 0       0       1.5     2.0     3.5
 1       4.5     0       3.5     8.0
 2       4.0     2.5     0       6.5
 
+Round 2:
+Final Result after 18 games:
 
+        0       1       2       score
+0       0       0.5     2.0     2.5
+1       5.5     0       3.5     9.0
+2       4.0     2.5     0       6.5
 
+Tweak to evaluate2:
+SEVEN_BONUS = 50
+CHAIN_BASE = 10
+ODD_EVEN = 10
+CENTER_BONUS = 10
+
+Final Result after 6 games: evaluate, evaluate2
+
+        0       1       score
+0       0       2.5     2.5
+1       3.5     0       3.5
 
 
 
