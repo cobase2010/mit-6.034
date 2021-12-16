@@ -565,12 +565,12 @@ def tournament(total_rounds, player_list):
                         print print_results(result_list)
                         game_num += 1
 
-    print "Final Result after", round*len(player_list)*(len(player_list)-1) * 3, "games:"
+    print "Final Result after", total_round*len(player_list)*(len(player_list)-1) * 3, "games:"
     print print_results(result_list)
                         
     
-# tournament(1, ["basic_player", "your_player", "your_player2"])
-tournament(1, ["your_player", "your_player2"])
+tournament(1, ["basic_player", "quick_to_win_player2", "your_player", "your_player2"])
+# tournament(1, ["your_player", "your_player2"])
 
 
 COMPETE = (False)
@@ -626,6 +626,20 @@ Final Result after 6 games: evaluate, evaluate2
 1       3.5     0       3.5
 
 
+Final Result after 18 games: basic, evaluate, evaluate2 (on pc)
 
+        0       1       2       score
+0       0       2.5     2.0     4.5
+1       3.5     0       4       7.5
+2       4.0     2       0       6.0
+
+
+Final Result after 0 games: basic, basic2, evaluate, evaluate2 (on pc)
+
+        0       1       2       3       score
+0       0       4       0       3.0     7.0
+1       2       0       4       3       9
+2       6       2       0       2.0     10.0
+3       3.0     3       4.0     0       10.0
 
 """
