@@ -565,7 +565,7 @@ def tournament(total_rounds, player_list):
                         print print_results(result_list)
                         game_num += 1
 
-    print "Final Result after", total_round*len(player_list)*(len(player_list)-1) * 3, "games:"
+    print "Final Result after", total_rounds*len(player_list)*(len(player_list)-1) * 3, "games:"
     print print_results(result_list)
                         
     
@@ -641,5 +641,14 @@ Final Result after 0 games: basic, basic2, evaluate, evaluate2 (on pc)
 1       2       0       4       3       9
 2       6       2       0       2.0     10.0
 3       3.0     3       4.0     0       10.0
+
+
+Game 36: your_player2 vs your_player winner: on mac this time, evaluate2 is the worst this time.
+
+        0       1       2       3       score
+0       0       2.5     1.5     4.0     8.0
+1       3.5     0       2       4       9.5
+2       4.5     4       0       3.0     11.5
+3       2.0     2       3.0     0       7.0
 
 """
