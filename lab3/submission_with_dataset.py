@@ -447,7 +447,7 @@ def my_agent(obs, config):
 
     # Use the heuristic to assign a score to each possible board in the next step
     if len(valid_moves) >= 6:
-        N_STEPS=6
+        N_STEPS=7
     if len(valid_moves) ==5:
         N_STEPS=10
     if len(valid_moves) ==4:
@@ -463,6 +463,6 @@ def my_agent(obs, config):
     # col = random.choice(max_cols) # Taking the center columns first
     col = max_cols[0]
     end = time.time()
-    # print("my_agent excecution time", (end-start), "move", col, "score", scores[col], "at depth", N_STEPS, "pos count", solver.node_count)
+    print("my_agent excecution time", (end-start), "move", col, "score", scores[col], "at depth", N_STEPS, "pos count", solver.node_count)
     
     return col
