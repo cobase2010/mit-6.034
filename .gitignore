@@ -1,2 +1,17 @@
 *.pyc
 .DS_Store
+*.o
+lab3/connect4/4ply.1
+lab3/connect4/4py
+lab3/connect4/7x6.book
+lab3/connect4/8py
+lab3/connect4/8py.book
+lab3/connect4/12ply.1
+lab3/connect4/12ply.book
+lab3/connect4/12py
+.gitignore
+lab3/connect4/generator
+lab3/connect4/cs4solver
+.gitignore
+.gitignore
+lab3/connect4/c4solver
