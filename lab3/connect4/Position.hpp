@@ -243,7 +243,7 @@ class Position {
     return winning_position() & possible() & column_mask(col);
   }
 
- private:
+ public:
   position_t current_position; // bitmap of the current_player stones
   position_t mask;             // bitmap of all the already palyed spots
   unsigned int moves;        // number of moves played since the beinning of the game.

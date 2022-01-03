@@ -59,6 +59,7 @@ int main(int argc, char** argv) {
       std::cerr << "Line " << l << ": Invalid move " << (P.nbMoves() + 1) << " \"" << line << "\"" << std::endl;
     } else {
       std::cout << line;
+      // std::cout << P.key3();
       if(analyze) {
         std::vector<int> scores = solver.analyze(P, weak);
         for(int i = 0; i < Position::WIDTH; i++) std::cout << " " << scores[i];

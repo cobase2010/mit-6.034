@@ -10,21 +10,64 @@ using namespace GameSolver::Connect4;
 
 std::unordered_set<uint64_t> visited;
 
+void signal_handler(int signal) 
+{
+    if (signal == SIGABRT) {
+        std::cerr << "SIGABRT received\n";
+    } else {
+        std::cerr << "Unexpected signal " << signal << " received\n";
+    }
+    // std::_Exit(EXIT_FAILURE);
+}
+
 /**
  * Explore and print all possible position under a given depth.
  * symetric positions are printed only once.
  */
 void explore(const Position &P, char* pos_str, const int depth) {
+  // auto previous_handler = signal(SIGABRT, signal_handler);
+ 
   uint64_t key = P.key3();
-  if(!visited.insert(key).second)
-    return; // already explored position
+  // if (key == 110598) {
+  //   std::cout << "seing this key\n";
+  //   std::cout << P.current_position << std::endl;
+  //   std::cout << P.mask << std::endl;
+  //   auto search = visited.find(key);
+  //   if (search != visited.end()) {
+  //     std::cout << "found it" << std::endl;
+  //   } else {
+  //     std::cout << "not found" << std::endl;
+  //   }
+    
+  // }
 
+  // Only generate books starting with 4 or *4 as we will never play other moves as AI
   int nb_moves = P.nbMoves();
+
+  // if (nb_moves == 1 && pos_str[0] != '4') 
+  //   return;
+
+  if (nb_moves > 1) {
+    if (pos_str[0] != '4' && pos_str[1] != '4') 
+      return;
+  }
+  
+  if(!visited.insert(key).second) {
+    // if (key == 110598) {
+    //   std::cerr << "max size " << visited.max_size() << std::endl;
+    //   std::cerr << "seeing this key\n";
+    // }
+    return; // already explored position
+  }
+
+
+  // int nb_moves = P.nbMoves();
   if(nb_moves <= depth)
   std::cout << pos_str << std::endl;
   if(nb_moves >= depth) return;  // do not explore at further depth
 
   for(int i = 0; i < Position::WIDTH; i++) // explore all possible moves
+    
     if(P.canPlay(i) && !P.isWinningMove(i)) {
       Position P2(P);
       P2.playCol(i);
@@ -83,7 +126,7 @@ int main(int argc, char** argv) {
   if(argc > 1) {
     int depth = atoi(argv[1]);
     char pos_str[depth + 1]; // = {0};
-    memset(pos_str, 0, (depth+1)*sizeof(int));
+    memset(pos_str, 0, (depth+2)*sizeof(int));
     explore(Position(), pos_str, depth);
   } else generate_opening_book();
 }
