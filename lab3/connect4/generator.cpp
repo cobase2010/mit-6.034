@@ -10,15 +10,15 @@ using namespace GameSolver::Connect4;
 
 std::unordered_set<uint64_t> visited;
 
-void signal_handler(int signal) 
-{
-    if (signal == SIGABRT) {
-        std::cerr << "SIGABRT received\n";
-    } else {
-        std::cerr << "Unexpected signal " << signal << " received\n";
-    }
-    // std::_Exit(EXIT_FAILURE);
-}
+// void signal_handler(int signal) 
+// {
+//     if (signal == SIGABRT) {
+//         std::cerr << "SIGABRT received\n";
+//     } else {
+//         std::cerr << "Unexpected signal " << signal << " received\n";
+//     }
+//     // std::_Exit(EXIT_FAILURE);
+// }
 
 /**
  * Explore and print all possible position under a given depth.
@@ -106,7 +106,7 @@ void generate_opening_book() {
       std::cerr << "Invalid line (line ignored): " << line << std::endl;
       continue;
     }
-    std::cerr << "pos: " << pos << "key: " << P.key3() << " score: " << score << " final: " << score - Position::MIN_SCORE + 1 << std::endl;
+    // std::cerr << "pos: " << pos << "key: " << P.key3() << " score: " << score << " final: " << score - Position::MIN_SCORE + 1 << std::endl;
     table->put(P.key3(), score - Position::MIN_SCORE + 1);
     if(count % 1000000 == 0) std::cerr << count << std::endl;
   }
@@ -126,7 +126,7 @@ int main(int argc, char** argv) {
   if(argc > 1) {
     int depth = atoi(argv[1]);
     char pos_str[depth + 1]; // = {0};
-    memset(pos_str, 0, (depth+2)*sizeof(int));
+    memset(pos_str, 0, (depth+1)*sizeof(char));
     explore(Position(), pos_str, depth);
   } else generate_opening_book();
 }

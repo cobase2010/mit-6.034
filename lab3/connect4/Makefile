@@ -1,5 +1,6 @@
 CXX=g++
 CXXFLAGS=--std=c++11 -W -Wall -O3 -DNDEBUG
+# CXXFLAGS=--std=c++11 -W -Wall -fsanitize=address -g
 
 SRCS=Solver.cpp
 OBJS=$(subst .cpp,.o,$(SRCS))

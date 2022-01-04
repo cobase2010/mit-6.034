@@ -15,3 +15,7 @@ lab3/connect4/cs4solver
 .gitignore
 .gitignore
 lab3/connect4/c4solver
+lab3/connect4/10ply_key.book
+lab3/connect4/10ply.book
+lab3/connect4/10ply.moves
+lab3/connect4/12.moves
