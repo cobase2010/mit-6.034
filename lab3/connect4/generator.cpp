@@ -28,7 +28,7 @@ void explore(const Position &P, char* pos_str, const int depth) {
   // auto previous_handler = signal(SIGABRT, signal_handler);
  
   uint64_t key = P.key3();
-  // if (key == 110598) {
+  // if (key == 110594) {
   //   std::cout << "seing this key\n";
   //   std::cout << P.current_position << std::endl;
   //   std::cout << P.mask << std::endl;
