@@ -40,25 +40,25 @@ std::unordered_set<uint64_t> visited;
 
 void explore2(Solver& solver, const Position &P, char* pos_str, const int depth) 
 {
-  uint64_t key = P.key3();
+  // uint64_t key = P.key3();
   int nb_moves = P.nbMoves();
 
   // std::cerr << "Entering explore2 with depth " << depth << " str " << pos_str << " num_moves " << nb_moves << std::endl;
   if(nb_moves >= depth) return;  // do not explore at further depth
 
-  if(!visited.insert(key).second) {
-    return; // already explored position
-  }
+  // if(!visited.insert(key).second) {
+  //   return; // already explored position
+  // }
 
   for (int i=0; i<Position::WIDTH; i++) {
     if(P.canPlay(i) && !P.isWinningMove(i)) {
       Position P2(P);
       P2.playCol(i);
-      key = P2.key3();
-      if(!visited.insert(key).second) {
-        // std::cerr << "key " << key << " exists" << std::endl;
-        continue; // already explored position
-      }
+      // key = P2.key3();
+      // if(!visited.insert(key).second) {
+      //   // std::cerr << "key " << key << " exists" << std::endl;
+      //   continue; // already explored position
+      // }
       
       
       std::vector<int> scores = solver.analyze(P2, false);
@@ -90,7 +90,7 @@ int main(int argc, char** argv) {
   Solver solver;
   bool weak = false;
   bool analyze = false;
-  int depth =22;
+  int depth =20;
   bool generate = false;
 
   std::string opening_book = "7x6.book";
@@ -141,6 +141,8 @@ int main(int argc, char** argv) {
     P.play(pos_str);
     explore2(solver, P, pos_str, depth);   //First player
     pos_str[0] = 0;
+    //for second player, we should hard code first 2 moves
+    //12 or 14, 23, 33 or 34, 44
     explore2(solver, Position(), pos_str, depth); //Second player
 
   }
