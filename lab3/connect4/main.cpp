@@ -18,8 +18,13 @@
 
 #include "Solver.hpp"
 #include <iostream>
+#include "Position.hpp"
+#include <string>
+#include <unordered_set>
+
 
 using namespace GameSolver::Connect4;
+std::unordered_set<uint64_t> visited;
 
 /**
  * Main function.
@@ -32,10 +37,61 @@ using namespace GameSolver::Connect4;
  *  Any invalid position (invalid sequence of move, or already won game)
  *  will generate an error message to standard error and an empty line to standard output.
  */
+
+void explore2(Solver& solver, const Position &P, char* pos_str, const int depth) 
+{
+  uint64_t key = P.key3();
+  int nb_moves = P.nbMoves();
+
+  // std::cerr << "Entering explore2 with depth " << depth << " str " << pos_str << " num_moves " << nb_moves << std::endl;
+  if(nb_moves >= depth) return;  // do not explore at further depth
+
+  if(!visited.insert(key).second) {
+    return; // already explored position
+  }
+
+  for (int i=0; i<Position::WIDTH; i++) {
+    if(P.canPlay(i) && !P.isWinningMove(i)) {
+      Position P2(P);
+      P2.playCol(i);
+      key = P2.key3();
+      if(!visited.insert(key).second) {
+        // std::cerr << "key " << key << " exists" << std::endl;
+        continue; // already explored position
+      }
+      
+      
+      std::vector<int> scores = solver.analyze(P2, false);
+      int best = -1000;
+      int best_move = -1;
+      for(int j = 0; j < Position::WIDTH; j++) {
+        if (scores[j] > best) {
+          best = scores[j];
+          best_move = j;
+        }
+      }
+      pos_str[nb_moves] = '1' + i;
+      pos_str[nb_moves + 1] = 0; 
+      if (best >= (Position::WIDTH * Position::HEIGHT + 1 - P.nbMoves()) / 2 - 5) {
+        std::cerr << "score " << best << " for " << pos_str << " ignore\n";
+        continue;   //ignore all positions that can be searched up
+      }
+      
+      std::cout << pos_str << " " << best_move << std::endl;
+      pos_str[nb_moves+1] = '1' + best_move;
+      pos_str[nb_moves+2] = 0;
+      P2.playCol(best_move);
+      // std::cerr << "Calling explore2 with depth " << depth << " str " << pos_str << std::endl;
+      explore2(solver, P2, pos_str, depth);
+    }
+  }
+}
 int main(int argc, char** argv) {
   Solver solver;
   bool weak = false;
   bool analyze = false;
+  int depth =22;
+  bool generate = false;
 
   std::string opening_book = "7x6.book";
   for(int i = 1; i < argc; i++) {
@@ -47,28 +103,45 @@ int main(int argc, char** argv) {
       else if(argv[i][1] == 'a') { // paramater -a: make an analysis of all possible moves
         analyze = true;
       }
+      else if (argv[i][1] == 'g') { // paraneter -g: generate opening book for best moves
+        generate = true;
+      }
     }
   }
   solver.loadBook(opening_book);
 
-  std::string line;
+  if (!generate) {
+    std::string line;
 
-  for(int l = 1; std::getline(std::cin, line); l++) {
-    Position P;
-    if(P.play(line) != line.size()) {
-      std::cerr << "Line " << l << ": Invalid move " << (P.nbMoves() + 1) << " \"" << line << "\"" << std::endl;
-    } else {
-      std::cout << line;
-      // std::cout << P.key3();
-      if(analyze) {
-        std::vector<int> scores = solver.analyze(P, weak);
-        for(int i = 0; i < Position::WIDTH; i++) std::cout << " " << scores[i];
+    for(int l = 1; std::getline(std::cin, line); l++) {
+      Position P;
+      if(P.play(line) != line.size()) {
+        std::cerr << "Line " << l << ": Invalid move " << (P.nbMoves() + 1) << " \"" << line << "\"" << std::endl;
+      } else {
+        std::cout << line;
+        // std::cout << P.key3();
+        if(analyze) {
+          std::vector<int> scores = solver.analyze(P, weak);
+          for(int i = 0; i < Position::WIDTH; i++) std::cout << " " << scores[i];
+        }
+        else {
+          int score = solver.solve(P, weak);
+          std::cout << " " << score;
+        }
+        std::cout << std::endl;
       }
-      else {
-        int score = solver.solve(P, weak);
-        std::cout << " " << score;
-      }
-      std::cout << std::endl;
     }
+  } else {
+
+    char pos_str[depth + 1]; // = {0};
+    memset(pos_str, 0, (depth+1)*sizeof(char));
+    pos_str[0] = '4';
+    pos_str[1] = 0;
+    Position P;
+    P.play(pos_str);
+    explore2(solver, P, pos_str, depth);   //First player
+    pos_str[0] = 0;
+    explore2(solver, Position(), pos_str, depth); //Second player
+
   }
 }
