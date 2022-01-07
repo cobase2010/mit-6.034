@@ -4,8 +4,6 @@ from functools import lru_cache
 import pickle
 import random
 import time
-import zlib
-import base64 as b64
 from kaggle_environments import make
 import sys
 sys.path.append("/kaggle_simulations/agent")
@@ -49,24 +47,6 @@ transposition_table = LRUCache(1000000)
 # print(cache.get(1))
 
 # print(cache.cache)
-
-def serializeAndCompress(value, verbose=True):
-    serializedValue = pickle.dumps(value)
-    if verbose:
-        print('Lenght of serialized object:', len(serializedValue))
-    c_data =  zlib.compress(serializedValue, 9)
-    if verbose:
-        print('Lenght of compressed and serialized object:', len(c_data))
-    #   return b64.b64encode(c_data)
-    return c_data
-
-def decompressAndDeserialize(compresseData):
-    # d_data_byte = b64.b64decode(compresseData)
-    # data_byte = zlib.decompress(d_data_byte)
-    # d_data_byte = b64.b64decode(compresseData)
-    data_byte = zlib.decompress(compresseData)
-    value = pickle.loads(data_byte)
-    return value
 
 def ternary (n):
     if n == 0:
@@ -479,31 +459,6 @@ class Position(object):
                 possible_mask = forced_moves
         return possible_mask & ~(opponent_win >> 1)
 
-    # mirrored bitboard
-    # 6666666 5555555 4444444 3333333 2222222 1111111 0000000
-    # 0000000 0000000 0000000 0000000 0000000 0000000 1111111 column_mask[0]
-    # 0000000 0000000 0000000 0000000 0000000 1111111 0000000 column_mask[1]
-
-    @classmethod
-    def mirror(self, field):
-        mirrored = 0x0
-        mirrored |= ((field & column_mask(0)) << 42)
-        mirrored |= ((field & column_mask(1)) << 28)
-        mirrored |= ((field & column_mask(2)) << 14)
-        mirrored |= (field & column_mask(3))
-        mirrored |= ((field & column_mask(4)) >> 14)
-        mirrored |= ((field & column_mask(5)) >> 28)
-        mirrored |= ((field & column_mask(6)) >> 42)
-        return mirrored
-        # k1 = 0x5555555555555555
-        # k2 = 0x3333333333333333
-        # k4 = 0x0f0f0f0f0f0f0f0f
-        # x = ((x >> 1) & k1) | ((x & k1) << 1)
-        # x = ((x >> 2) & k2) | ((x & k2) << 2)
-        # x = ((x >> 4) & k4) | ((x & k4) << 4)
-        # x = x >> 1
-        # return x
-
 
 class Solver(object):
     
@@ -538,10 +493,8 @@ class Solver(object):
         if opening_book == None:
             print("Loading openbing book...")
             opening_book = dict()
-            with open("/kaggle_simulations/agent/opening_book.22", 'rb') as f:
-                opening_book_data = f.read()
-                # opening_book = pickle.load(f)
-                opening_book = decompressAndDeserialize(opening_book_data)
+            with open("/kaggle_simulations/agent/opening_book.12", 'rb') as f:
+                opening_book = pickle.load(f)
     
     # def negamax(self, p, alpha, beta):
     #     self.node_count += 1
@@ -759,14 +712,15 @@ class Solver(object):
         return score
 
 def my_agent(obs, config):
-    import numpy as np
-    import random
-    import time
-    import cProfile, pstats, io
-    from pstats import SortKey
+    
+    # import cProfile, pstats, io
+    # from pstats import SortKey
     
     
     # with cProfile.Profile() as pr:
+
+    if obs.step > 900:
+        raise Exception("Don't Submit To Competition")
 
     start = time.time()
     grid = np.asarray(obs.board).reshape(config.rows, config.columns)
@@ -780,8 +734,8 @@ def my_agent(obs, config):
     # Very first move, always play the middle
     if sum(obs.board) == 0:
         return 3
-    # elif sum(obs.board) == 1 and grid[0, 3] == 0:
-    #     return 3 # Play middle whether opponent places there or not
+    elif sum(obs.board) == 1 and grid[0, 3] == 0:
+        return 3 # Play middle whether opponent places there or not
     
     # If there is a winning move, return it now!
     if p.can_win_next():
@@ -792,26 +746,27 @@ def my_agent(obs, config):
                 print("my_agent_new winning move", col)
                 return col
 
-
-    # If we only store mirrored positions, then if we find something with the same key3
-    # We need to check if it's mirrored from the current position. 
-    # book storage: key -> move
-    # during generation, we use key3 to not store transposed positions
-    # at lookup time, if key doesn't exist, mirror the current position and check again if found, return mirrored col
-    if p.moves < 23:
-        p2 = Position(position, mask)
-        key = p2.key()
-        if key in opening_book:
-            best_move = opening_book[key]
-            print("Move", p.moves + 1, "Playing best move from the book", best_move)
+    if p.moves < 12:  # we should have entries in the opening book
+        best_score, best_move = -100, None
+        for col in valid_moves:
+            p2 = Position(position, mask)
+            p2.play(col)
+            key3 = p2.key3()
+            if key3 in opening_book:
+                # if obs.mark == 2:
+                #     score = -opening_book[key3]
+                # else: 
+                #     score = opening_book[key3]
+                score = -opening_book[key3]
+                # print("found", key3, score, "for", col)
+                if score > best_score:
+                    best_score = score
+                    best_move = col
+            else:
+                print("key", key3, "not found for col", col)
+        if best_move != None:
+            print("Playing best move from the book", best_move)
             return best_move
-        else:
-            p3 = Position(Position.mirror(position), Position.mirror(mask))
-            key2 = p3.key()
-            if key2 in opening_book:
-                best_move = opening_book[key2]
-                print("Move", p.moves + 1, "Playing mirrored best move from the book", 6 - best_move)
-                return 6 - best_move
 
     # Use the heuristic to assign a score to each possible board in the next step
     if len(valid_moves) >= 6:
@@ -823,7 +778,8 @@ def my_agent(obs, config):
     if len(valid_moves) <=3:
         N_STEPS= 20
 
-
+    # if p.moves == 29:
+    #     p.pretty_print()
     scores = dict(zip(valid_moves, [solver.score_move(p, col, obs.mark, config, N_STEPS) for col in valid_moves]))   
     
     #Get the highest score value    
