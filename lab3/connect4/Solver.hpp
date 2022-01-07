@@ -34,7 +34,7 @@ class Solver {
   TranspositionTable < uint_t < Position::WIDTH*(Position::HEIGHT + 1) - TABLE_SIZE >, Position::position_t, uint8_t, TABLE_SIZE > transTable;
   OpeningBook book{Position::WIDTH, Position::HEIGHT}; // opening book
   unsigned long long nodeCount; // counter of explored nodes.
-  int columnOrder[Position::WIDTH]; // column exploration order
+  
 
   /**
    * Reccursively score connect 4 position using negamax variant of alpha-beta algorithm.
@@ -51,6 +51,7 @@ class Solver {
 
  public:
   static const int INVALID_MOVE = -1000;
+  int columnOrder[Position::WIDTH]; // column exploration order
 
   // Returns the score of a position
   int solve(const Position &P, bool weak = false);

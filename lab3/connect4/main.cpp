@@ -25,6 +25,8 @@
 
 using namespace GameSolver::Connect4;
 std::unordered_set<uint64_t> visited;
+int positions_explored = 0;
+int positions_ignored = 0;
 
 /**
  * Main function.
@@ -44,7 +46,7 @@ void explore2(Solver& solver, const Position &P, char* pos_str, const int depth)
   int nb_moves = P.nbMoves();
 
   // std::cerr << "Entering explore2 with depth " << depth << " str " << pos_str << " num_moves " << nb_moves << std::endl;
-  if(nb_moves >= depth) return;  // do not explore at further depth
+  if(nb_moves > depth) return;  // do not explore at further depth
 
   // if(!visited.insert(key).second) {
   //   return; // already explored position
@@ -54,26 +56,27 @@ void explore2(Solver& solver, const Position &P, char* pos_str, const int depth)
     if(P.canPlay(i) && !P.isWinningMove(i)) {
       Position P2(P);
       P2.playCol(i);
-      // key = P2.key3();
-      // if(!visited.insert(key).second) {
-      //   // std::cerr << "key " << key << " exists" << std::endl;
-      //   continue; // already explored position
-      // }
+      uint64_t key = P2.key3();
+      if(!visited.insert(key).second) {
+        // std::cerr << "key " << key << " exists" << std::endl;
+        continue; // already explored position
+      }
       
-      
+      positions_explored++;
       std::vector<int> scores = solver.analyze(P2, false);
       int best = -1000;
       int best_move = -1;
       for(int j = 0; j < Position::WIDTH; j++) {
-        if (scores[j] > best) {
-          best = scores[j];
-          best_move = j;
+        if (scores[solver.columnOrder[j]] > best) {
+          best = scores[solver.columnOrder[j]];
+          best_move = solver.columnOrder[j];
         }
       }
       pos_str[nb_moves] = '1' + i;
       pos_str[nb_moves + 1] = 0; 
       if (best >= (Position::WIDTH * Position::HEIGHT + 1 - P.nbMoves()) / 2 - 5) {
-        std::cerr << "score " << best << " for " << pos_str << " ignore\n";
+        // std::cerr << "score " << best << " for " << pos_str << " ignore\n";
+        positions_ignored++;
         continue;   //ignore all positions that can be searched up
       }
       
@@ -90,7 +93,7 @@ int main(int argc, char** argv) {
   Solver solver;
   bool weak = false;
   bool analyze = false;
-  int depth =20;
+  int depth =24;
   bool generate = false;
 
   std::string opening_book = "7x6.book";
@@ -144,6 +147,8 @@ int main(int argc, char** argv) {
     //for second player, we should hard code first 2 moves
     //12 or 14, 23, 33 or 34, 44
     explore2(solver, Position(), pos_str, depth); //Second player
+
+    std::cerr << "Positions explored: " << positions_explored << " Positions ignore: " << positions_ignored << std::endl;
 
   }
 }
