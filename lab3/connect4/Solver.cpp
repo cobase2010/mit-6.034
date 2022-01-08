@@ -42,8 +42,8 @@ int Solver::negamax(const Position &P, int alpha, int beta) {
 
   nodeCount++; // increment counter of explored nodes
 
-  // std::cout << "Entering negamax with " << nodeCount << " nodes " << alpha << " " << beta << std::endl;
-  // std::cout << P.current_position << " " << P.mask << std::endl;
+  std::cout << "Entering negamax with " << nodeCount << " nodes " << alpha << " " << beta << std::endl;
+  std::cout << P.current_position << " " << P.mask << std::endl;
 
   Position::position_t possible = P.possibleNonLosingMoves();
   if(possible == 0)     // if no possible non losing move, opponent wins next move
