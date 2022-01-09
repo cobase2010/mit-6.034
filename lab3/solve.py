@@ -97,162 +97,6 @@ def column_mask(col):
     return ((1 << 6) - 1) << col * 7
 
 
-@lru_cache(maxsize=None)
-def has_won(position):
-    # Horizontal check
-    m = position & (position >> 7)
-    if m & (m >> 14):
-        return True
-    # Diagonal \
-    m = position & (position >> 6)
-    if m & (m >> 12):
-        return True
-    # Diagonal /
-    m = position & (position >> 8)
-    if m & (m >> 16):
-        return True
-    # Vertical
-    m = position & (position >> 1)
-    if m & (m >> 2):
-        return True
-    # Nothing found
-    return False
-
-
-@lru_cache(maxsize=None)
-def evaluate3(oppBoard, myBoard):
-    """
-    Returns the number of possible 3 in a rows in bitboard format.
-    Running time: O(1)
-    http://www.gamedev.net/topic/596955-trying-bit-boards-for-connect-4/
-    """
-    inverseBoard = ~(myBoard | oppBoard)
-    rShift7MyBoard = myBoard >> 7
-    lShift7MyBoard = myBoard << 7
-    rShift14MyBoard = myBoard >> 14
-    lShit14MyBoard = myBoard << 14
-    rShift16MyBoard = myBoard >> 16
-    lShift16MyBoard = myBoard << 16
-    rShift8MyBoard = myBoard >> 8
-    lShift8MyBoard = myBoard << 8
-    rShift6MyBoard = myBoard >> 6
-    lShift6MyBoard = myBoard << 6
-    rShift12MyBoard = myBoard >> 12
-    lShift12MyBoard = myBoard << 12
-
-    # check _XXX and XXX_ horizontal
-    result = inverseBoard & rShift7MyBoard & rShift14MyBoard\
-        & (myBoard >> 21)
-
-    result |= inverseBoard & rShift7MyBoard & rShift14MyBoard\
-        & lShift7MyBoard
-
-    result |= inverseBoard & rShift7MyBoard & lShift7MyBoard\
-        & lShit14MyBoard
-
-    result |= inverseBoard & lShift7MyBoard & lShit14MyBoard\
-        & (myBoard << 21)
-
-    # check XXX_ diagonal /
-    result |= inverseBoard & rShift8MyBoard & rShift16MyBoard\
-        & (myBoard >> 24)
-
-    result |= inverseBoard & rShift8MyBoard & rShift16MyBoard\
-        & lShift8MyBoard
-
-    result |= inverseBoard & rShift8MyBoard & lShift8MyBoard\
-        & lShift16MyBoard
-
-    result |= inverseBoard & lShift8MyBoard & lShift16MyBoard\
-        & (myBoard << 24)
-
-    # check _XXX diagonal \
-    result |= inverseBoard & rShift6MyBoard & rShift12MyBoard\
-        & (myBoard >> 18)
-
-    result |= inverseBoard & rShift6MyBoard & rShift12MyBoard\
-        & lShift6MyBoard
-
-    result |= inverseBoard & rShift6MyBoard & lShift6MyBoard\
-        & lShift12MyBoard
-
-    result |= inverseBoard & lShift6MyBoard & lShift12MyBoard\
-        & (myBoard << 18)
-
-    # check for _XXX vertical
-    result |= inverseBoard & (myBoard << 1) & (myBoard << 2)\
-        & (myBoard << 3)
-
-    return result
-
-
-@lru_cache(maxsize=None)
-def evaluate2(myBoard, oppBoard):
-    """
-    Returns the number of possible 2 in a rows in bitboard format.
-    Running time: O(1)
-    """
-    inverseBoard = ~(myBoard | oppBoard)
-    rShift7MyBoard = myBoard >> 7
-    rShift14MyBoard = myBoard >> 14
-    lShift7MyBoard = myBoard << 7
-    lShift14MyBoard = myBoard << 14
-    rShift8MyBoard = myBoard >> 8
-    lShift8MyBoard = myBoard << 8
-    lShift16MyBoard = myBoard << 16
-    rShift16MyBoard = myBoard >> 16
-    rShift6MyBoard = myBoard >> 6
-    lShift6MyBoard = myBoard << 6
-    rShift12MyBoard = myBoard >> 12
-    lShift12MyBoard = myBoard << 12
-
-    # check for _XX
-    result = inverseBoard & rShift7MyBoard & rShift14MyBoard
-    result |= inverseBoard & rShift7MyBoard & rShift14MyBoard
-    result |= inverseBoard & rShift7MyBoard & lShift7MyBoard
-
-    # check for XX_
-    result |= inverseBoard & lShift7MyBoard & lShift14MyBoard
-
-    # check for XX / diagonal
-    result |= inverseBoard & lShift8MyBoard & lShift16MyBoard
-
-    result |= inverseBoard & rShift8MyBoard & rShift16MyBoard
-    result |= inverseBoard & rShift8MyBoard & rShift16MyBoard
-    result |= inverseBoard & rShift8MyBoard & lShift8MyBoard
-
-    # check for XX \ diagonal
-    result |= inverseBoard & rShift6MyBoard & rShift12MyBoard
-    result |= inverseBoard & rShift6MyBoard & rShift12MyBoard
-    result |= inverseBoard & rShift6MyBoard & lShift6MyBoard
-    result |= inverseBoard & lShift6MyBoard & lShift12MyBoard
-
-    # check for _XX vertical
-    result |= inverseBoard & (myBoard << 1) & (myBoard << 2) \
-        & (myBoard << 2)
-
-    return result
-
-
-@lru_cache(maxsize=None)
-def evaluate1(oppBoard, myBoard):
-    """
-    Returns the number of possible 1 in a rows in bitboard format.
-    Running time: O(1)
-    Diagonals are skipped since they are worthless.
-    """
-    inverseBoard = ~(myBoard | oppBoard)
-    # check for _X
-    result = inverseBoard & (myBoard >> 7)
-
-    # check for X_
-    result |= inverseBoard & (myBoard << 7)
-
-    # check for _X vertical
-    result |= inverseBoard & (myBoard << 1)
-
-    return result
-
 
 @lru_cache(maxsize=None)
 def bitboardBits(i):
@@ -271,51 +115,6 @@ def bitboardBits(i):
     i = (i & 0x00000000FFFFFFFF) + ((i & 0xFFFFFFFF00000000) >> 32)
 
     return i
-
-
-@lru_cache(maxsize=None)
-def evaluate_position(n_moves, oppBoard, myBoard):
-    """
-    Returns cost of each board configuration.
-    winning is a winning move
-    blocking is a blocking move
-    Running time: O(7n)
-    """
-    winReward = 9999999
-    OppCost3Row = 1000
-    MyCost3Row = 3000
-    OppCost2Row = 500
-    MyCost2Row = 500
-    OppCost1Row = 100
-    MyCost1Row = 100
-
-    if has_won(oppBoard):
-        return -winReward - (42 - n_moves) // 2
-    elif has_won(myBoard):
-        return winReward + (42 - n_moves) // 2
-    # elif self.has_drawn():
-    #     return 0  # draw score
-
-    get3Win = evaluate3(oppBoard, myBoard)
-    winning3 = bitboardBits(get3Win) * MyCost3Row
-
-    get3Block = evaluate3(myBoard, oppBoard)
-    blocking3 = bitboardBits(get3Block) * -OppCost3Row
-
-    get2Win = evaluate2(oppBoard, myBoard)
-    winning2 = bitboardBits(get2Win) * MyCost2Row
-
-    get2Block = evaluate2(myBoard, oppBoard)
-    blocking2 = bitboardBits(get2Block) * -OppCost2Row
-
-    get1Win = evaluate1(oppBoard, myBoard)
-    winning1 = bitboardBits(get1Win) * MyCost1Row
-
-    get1Block = evaluate1(myBoard, oppBoard)
-    blocking1 = bitboardBits(get1Block) * -OppCost1Row
-
-    return winning3 + blocking3 + winning2 + blocking2\
-        + winning1 + blocking1
 
 
 @lru_cache(maxsize=None)
@@ -349,6 +148,16 @@ def compute_winning_position(position, mask):
     r |= p & (position >> 3*(HEIGHT+2))
 
     return r & (279258638311359 ^ mask)
+
+def move_to_col(move):
+    """
+    Convert move bitmap to column number (zero indexed)
+    """
+    for i in range(7):
+        if move >> 7 * (i+1) == 0:
+            return i
+
+
 
 
 class Position(object):
@@ -550,48 +359,28 @@ class Solver(object):
         for i in range(7):
             self.column_order.append(7 // 2 + (1 - 2 * (i % 2)) * (i + 1) // 2)
 
-        # global cached_positions
-        # if cached_positions == None:
-        #     print("initializing cached_positions...")
-        #     cached_positions = dict()
-        #     with open("./connect-4.data") as f:
-        #         count = 0
-        #         for line in f:
-        #             l = line.split(",")
-        #             s = l[-1].strip("\n")
-        #             l = [1 if x == 'x' else 2 if x == 'o' else 0 for x in l[:-1]]
-        #             grid = np.asarray(l).reshape(7, 6)
-        #             grid = np.rot90(grid)
-        #             position, mask = Position.get_position_mask_bitmap(grid, 1)
-        #             p = Position(position, mask)
-        #             # p.pretty_print()
-        #             # print(s)
-        #             count += 1
-        #             cached_positions[position + mask] = 1 if s == 'win' else -1 if s == "loss" else 0
-        # self.cache = cached_positions
-
-        # global opening_book
-        # if opening_book == None:
-        #     print("Loading openbing book...")
-        #     opening_book = dict()
-        #     with open("./opening_book.24", 'rb') as f:
-        #         opening_book_data = f.read()
-        #         # opening_book = pickle.load(f)
-        #         opening_book = decompressAndDeserialize(opening_book_data)
+        global opening_book
+        if opening_book == None:
+            print("Loading opening book...")
+            opening_book = dict()
+            with open("./opening_book.24", 'rb') as f:
+                opening_book_data = f.read()
+                # opening_book = pickle.load(f)
+                opening_book = decompressAndDeserialize(opening_book_data)
 
     def negamax(self, p: Position, alpha, beta):
         """
         Negamax to solve a position without depth
         """
-        assert(alpha < beta)
+        # assert(alpha < beta)
         # assert(not p.can_win_next())
 
         self.node_count += 1    # increment counter of explored nodes
 
-        if self.node_count % 100000 == 0:
-            print(self.node_count, "explored.")
-            print("Entering negamax with ", self.node_count, "nodes", alpha, beta)
-            print(p.position, p.mask)
+        # if self.node_count % 100000 == 0:
+        #     print(self.node_count, "explored.")
+        #     print("Entering negamax with ", self.node_count, "nodes", alpha, beta)
+        #     print(p.position, p.mask)
 
         # print("Entering negamax with ", self.node_count, "nodes", alpha, beta)
         # print(p.position, p.mask)
@@ -609,11 +398,11 @@ class Solver(object):
         if possible == 0:   # if no possible non losing moves, opponent wins next move
             # p.pretty_print()
             # print("opponent wins with score ", -(42 - p.moves) // 2)
-            return int(-(42 - p.moves) / 2)
+            return (int(-(42 - p.moves) / 2), None)
 
         if p.moves >= 40:  # check for draw game
             # print("draw game")
-            return 0
+            return (0, None)
 
         # lower bound of score as opponent cannot win next move
         min = int(-(40 - p.moves) / 2)
@@ -621,18 +410,19 @@ class Solver(object):
             alpha = min             # there is no need to keep alpha below our max possible score
             # prune the exploration if the [alpha:beta] window is empty
             if alpha >= beta:
-                return alpha
+                return (alpha, None)
 
         max = (41 - p.moves) // 2
         if beta > max:
             beta = max              # there is no need to keep beta above our max possible score
             # prune the exploration if [alpha:beta] window is empty
             if alpha >= beta:
-                return beta
+                return (beta, None)
 
         key = p.key()
-        val = transposition_table.get(key)
-        if val != None:
+        entry = transposition_table.get(key)
+        if entry != None:
+            val, best_move = entry
             if val > self.MAX_SCORE - self.MIN_SCORE + 1:   # we have a lower bound
                 min = val + 2 * self.MIN_SCORE - self.MAX_SCORE - 2
                 if alpha < min:
@@ -640,7 +430,7 @@ class Solver(object):
                     alpha = min
                     # prune the exploration if the [alpha;beta] window is empty.
                     if alpha >= beta:
-                        return alpha
+                        return (alpha, best_move)
 
             else:       # we have an upper bound
                 max = val + self.MIN_SCORE - 1
@@ -649,7 +439,7 @@ class Solver(object):
                     beta = max
                     # prune the exploration if the [alpha;beta] window is empty.
                     if alpha >= beta:
-                        return beta
+                        return (beta, best_move)
 
         moves = []
         for i in range(7):
@@ -658,39 +448,53 @@ class Solver(object):
                 moves.append(move)
 
         moves.sort(reverse=True, key=lambda move: p.move_score(move))
-
+        best_move = None
+        best_score = -100
         for move in moves:
             p2 = Position(p.position, p.mask)
             # It's opponent turn in P2 position after current player plays x column.
             p2.play_move(move)
 
-            assert(p2.position != p.position)
+            # assert(p2.position != p.position)
 
             # explore opponent's score within [-beta;-alpha] windows:
             # no need to have good precision for score better than beta (opponent's score worse than -beta)
             # no need to check for score worse than alpha (opponent's score worse better than -alpha)
-            score = -self.negamax(p2, -beta, -alpha)
+            score = -self.negamax(p2, -beta, -alpha)[0]
+            if score > best_score:
+                best_score = score
+                best_move = move
+
+            # if score == 12 and p.moves == 9:
+            #     print("here")
 
             if score >= beta:
                 # save the lower bound of the position
                 transposition_table.put(
-                    key, score + self.MAX_SCORE - 2 * self.MIN_SCORE + 2)
+                    key, ((score + self.MAX_SCORE - 2 * self.MIN_SCORE + 2), best_move))
                 # prune the exploration if we find a possible move better than what we were looking for.
-                return score
+                return (score, best_move)
 
             if score > alpha:
                 # reduce the [alpha;beta] window for next exploration, as we only
                 # need to search for a position that is better than the best so far.
                 alpha = score
-
+                best_move = move
+        # if p.moves == 37 and score == -1:
+        #     print("here")
         # save the upper bound of the position
-        transposition_table.put(key, alpha - self.MIN_SCORE + 1)
-        return alpha
+        transposition_table.put(key, (alpha - self.MIN_SCORE + 1, best_move))
+        return (alpha, best_move)
 
     def solve(self, p: Position, weak=False):
+
+        best_move = None
         # check if win in one move as the Negamax function does not support this case.
         if p.can_win_next():
-            return int((43 - p.moves) / 2)
+            for col in range(7):
+                if p.is_winning_move2(col) > 0:
+                    # print("my_agent_new winning move", col)
+                    return int((43 - p.moves + 1) / 2), (mask + bottom_mask_col(col)) & column_mask(col)
 
         min = int(-(42 - p.moves) / 2)
         max = int((43 - p.moves) / 2)
@@ -704,13 +508,107 @@ class Solver(object):
                 med = int(min / 2)
             elif med >= 0 and int(max / 2) > med:
                 med = int(max / 2)
-            r = self.negamax(p, med, med + 1)
+            r, move = self.negamax(p, med, med + 1)
+            
             if r <= med:
                 max = r
+                if move != None:
+                    best_move = move
             else:
                 min = r
-        return min
+                if move != None:
+                    best_move = move
+        return min, best_move
 
+    def analyze(self, p: Position, weak=False):
+        scores = dict()
+        for col in range(7):
+            if p.can_play(col):
+                # print("Getting score for col", col)
+                if p.is_winning_move2(col):
+                    scores[col] = (43 - p.moves) // 2
+                else:
+                    p2 = Position(p.position, p.mask)
+                    p2.play(col)
+                    scores[col] = -self.solve(p2, weak)
+        return scores
+                    
+def my_agent(obs, config):
+    import numpy as np
+    import random
+    import time
+    # import cProfile, pstats, io
+    # from pstats import SortKey
+    
+    
+    # with cProfile.Profile() as pr:
+    weak = False
+
+    start = time.time()
+    grid = np.asarray(obs.board).reshape(config.rows, config.columns)
+    # print(grid)
+    position, mask = Position.get_position_mask_bitmap(grid, obs.mark)
+    # print(position, mask)
+    p = Position(position, mask)
+    solver = Solver()
+
+    
+    # Very first move, always play the middle
+    if sum(obs.board) == 0:
+        return 3
+
+    # If there is a winning move, return it now!
+    if p.can_win_next():
+        # print("can win next", p.position, p.mask)
+        # p.pretty_print()
+        for col in range(7):
+            if p.is_winning_move2(col) > 0:
+                print("my_agent_new winning move", col)
+                return col
+    
+    # If we only store mirrored positions, then if we find something with the same key3
+    # We need to check if it's mirrored from the current position. 
+    # book storage: key -> move
+    # during generation, we use key3 to not store transposed positions
+    # at lookup time, if key doesn't exist, mirror the current position and check again if found, return mirrored col
+    if p.moves < 26:
+        p2 = Position(position, mask)
+        key = p2.key()
+        if key in opening_book:
+            best_move = opening_book[key]
+            print("Move", p.moves + 1, "Playing best move from the book", best_move)
+            return best_move
+        else:
+            p3 = Position(Position.mirror(position), Position.mirror(mask))
+            key2 = p3.key()
+            if key2 in opening_book:
+                best_move = opening_book[key2]
+                print("Move", p.moves + 1, "Playing mirrored best move from the book", 6 - best_move)
+                return 6 - best_move
+    # print(p.position, p.mask)
+    # p.pretty_print()
+    # scores = solver.analyze(p, weak)
+    # max_cols = [key for key in scores.keys() if scores[key] == max(scores.values())]    
+    # best_move = random.choice(max_cols) # Taking the center columns first
+    # if p.moves == 37:
+    #     print("here")
+    score, best_move = solver.solve(p, weak)
+    # print("score", score)
+    if best_move == None:   # we lost in next move, randomly pick a move
+        for i in range(7):
+            if p.can_play(solver.column_order[i]):
+                best_col = solver.column_order[i]
+                break
+    else:
+        best_col = move_to_col(best_move)
+
+    end = time.time()
+    print("my_agent_new move #", p.moves+1, "time", (end-start), "move", best_col, "score", score, "pos count", solver.node_count)
+    return best_col
+
+
+import cProfile, pstats, io
+from pstats import SortKey
 
 grid = [
  [0, 0, 0, 0, 0, 0, 0],
@@ -725,15 +623,29 @@ print(position, mask)
 solver = Solver()
 p = Position(position, mask)
 # p.play_seq("4444443")
-p.play_seq("4444413222242")
+p.play_seq("3464744323555")
 p.pretty_print()
-position, mask = 44056576, 132136961
+position, mask = 35254972727296, 136583988658304
 p = Position(position, mask)
-# print("moves made so far", p.moves)
+print("moves made so far", p.moves)
 # count = p.popcount(p.mask)
 # print("count", count)
 # constant = 4
 # p2 = Position(Position.mirror(p.position), Position.mirror(p.mask))
 # p2.pretty_print()
-score = solver.solve(p)
-print("solved", score)
+# 
+# with cProfile.Profile() as pr:
+
+score, move = solver.solve(p, False)
+print("solved", score, "move", move_to_col(move)) #format(move, "0b"))
+    # scores = solver.analyze(p, False)
+    # print(scores)
+# s = io.StringIO()
+# sortby = SortKey.CUMULATIVE  #, SortKey.PCALLS
+# ps = pstats.Stats(pr, stream=s).sort_stats(sortby)
+# # ps.dump_stats("./profile.stats")
+# # pr.print_stats()
+# ps.print_stats(50)
+# print(s.getvalue())
+
+
