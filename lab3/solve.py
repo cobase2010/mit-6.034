@@ -530,7 +530,7 @@ class Solver(object):
                 else:
                     p2 = Position(p.position, p.mask)
                     p2.play(col)
-                    scores[col] = -self.solve(p2, weak)
+                    scores[col] = -self.solve(p2, weak)[0]
         return scores
                     
 def my_agent(obs, config):
@@ -635,11 +635,12 @@ print("moves made so far", p.moves)
 # p2.pretty_print()
 # 
 # with cProfile.Profile() as pr:
-
+start = time.time()
 score, move = solver.solve(p, False)
-print("solved", score, "move", move_to_col(move)) #format(move, "0b"))
-    # scores = solver.analyze(p, False)
-    # print(scores)
+print("solved", score, "move", move_to_col(move), (time.time()-start), "seconds with", solver.node_count, "nodes explored.") #format(move, "0b"))
+start = time.time()
+scores = solver.analyze(p, False)
+print(scores, time.time()-start, "seconds with", solver.node_count, "nodes explored.")
 # s = io.StringIO()
 # sortby = SortKey.CUMULATIVE  #, SortKey.PCALLS
 # ps = pstats.Stats(pr, stream=s).sort_stats(sortby)
