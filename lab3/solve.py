@@ -404,7 +404,7 @@ class Solver(object):
             if alpha >= beta:
                 return (beta, None)
 
-        key = p.key()
+        key = p.key3()
         val = transposition_table.get(key)
         if val != None:
             if val > self.MAX_SCORE - self.MIN_SCORE + 1:   # we have a lower bound
@@ -433,7 +433,7 @@ class Solver(object):
 
         moves.sort(reverse=True, key=lambda move: p.move_score(move))
         best_move = None
-        best_score = -100
+        best_score = alpha
         for move in moves:
             p2 = Position(p.position, p.mask)
             # It's opponent turn in P2 position after current player plays x column.
@@ -445,7 +445,8 @@ class Solver(object):
             # no need to have good precision for score better than beta (opponent's score worse than -beta)
             # no need to check for score worse than alpha (opponent's score worse better than -alpha)
             score = -self.negamax(p2, -beta, -alpha)[0]
-            if score > best_score:
+        
+            if score >= best_score:
                 best_score = score
                 best_move = move        # Store the best move so we could return as well
 
@@ -457,12 +458,14 @@ class Solver(object):
 
         if best_score >= beta:
             # save the lower bound of the position
+            # print("storing upper bound", best_score + self.MAX_SCORE - 2 * self.MIN_SCORE + 2)
             transposition_table.put(
                 key, best_score + self.MAX_SCORE - 2 * self.MIN_SCORE + 2)
         elif best_score <= alpha_orig: 
             # save the upper bound of the position
+            # print("storing lower bound", best_score - self.MIN_SCORE + 1)
             transposition_table.put(key, best_score - self.MIN_SCORE + 1)
-        return (alpha, best_move)
+        return (best_score, best_move)
 
     def solve(self, p: Position, weak=False):
 
@@ -612,6 +615,9 @@ print("moves made so far", p.moves)
 # 
 # with cProfile.Profile() as pr:
 start = time.time()
+score, move = solver.solve(p, False)
+print("solved", score, "move", move_to_col(move), (time.time()-start), "seconds with", solver.node_count, "nodes explored.") #format(move, "0b"))
+
 score, move = solver.solve(p, False)
 print("solved", score, "move", move_to_col(move), (time.time()-start), "seconds with", solver.node_count, "nodes explored.") #format(move, "0b"))
 start = time.time()
