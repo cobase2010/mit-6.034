@@ -151,6 +151,16 @@ def compute_winning_position(position, mask):
 
     return r & (279258638311359 ^ mask)
 
+def move_to_col(move):
+    """
+    Convert move bitmap to column number (zero indexed)
+    """
+    for i in range(7):
+        if move >> 7 * (i+1) == 0:
+            return i
+
+
+
 
 class Position(object):
     WIDTH = 7
@@ -369,32 +379,15 @@ class Solver(object):
 
         self.node_count += 1    # increment counter of explored nodes
 
-        # if self.node_count % 100000 == 0:
-        #     print(self.node_count, "explored.")
-        #     print("Entering negamax with ", self.node_count, "nodes", alpha, beta)
-        #     print(p.position, p.mask)
-
-        # print("Entering negamax with ", self.node_count, "nodes", alpha, beta)
-        # print(p.position, p.mask)
-        # p.pretty_print()
-
-        # if self.node_count == 845:
-        #     print("stop here")
-
-        # if p.can_win_next():
-        #     # p.pretty_print()
-        #     # print("can win with score", (42 - p.moves) // 2)
-        #     return (42 - p.moves) // 2
-
         possible = p.possible_non_losing_moves()
         if possible == 0:   # if no possible non losing moves, opponent wins next move
             # p.pretty_print()
             # print("opponent wins with score ", -(42 - p.moves) // 2)
-            return int(-(42 - p.moves) / 2)
+            return (int(-(42 - p.moves) / 2), None)
 
         if p.moves >= 40:  # check for draw game
             # print("draw game")
-            return 0
+            return (0, None)
 
         # lower bound of score as opponent cannot win next move
         min = int(-(40 - p.moves) / 2)
@@ -402,18 +395,19 @@ class Solver(object):
             alpha = min             # there is no need to keep alpha below our max possible score
             # prune the exploration if the [alpha:beta] window is empty
             if alpha >= beta:
-                return alpha
+                return (alpha, None)
 
         max = (41 - p.moves) // 2
         if beta > max:
             beta = max              # there is no need to keep beta above our max possible score
             # prune the exploration if [alpha:beta] window is empty
             if alpha >= beta:
-                return beta
+                return (beta, None)
 
         key = p.key()
-        val = transposition_table.get(key)
-        if val != None:
+        entry = transposition_table.get(key)
+        if entry != None:
+            val, best_move = entry
             if val > self.MAX_SCORE - self.MIN_SCORE + 1:   # we have a lower bound
                 min = val + 2 * self.MIN_SCORE - self.MAX_SCORE - 2
                 if alpha < min:
@@ -421,7 +415,7 @@ class Solver(object):
                     alpha = min
                     # prune the exploration if the [alpha;beta] window is empty.
                     if alpha >= beta:
-                        return alpha
+                        return (alpha, best_move)
 
             else:       # we have an upper bound
                 max = val + self.MIN_SCORE - 1
@@ -430,7 +424,7 @@ class Solver(object):
                     beta = max
                     # prune the exploration if the [alpha;beta] window is empty.
                     if alpha >= beta:
-                        return beta
+                        return (beta, best_move)
 
         moves = []
         for i in range(7):
@@ -439,7 +433,8 @@ class Solver(object):
                 moves.append(move)
 
         moves.sort(reverse=True, key=lambda move: p.move_score(move))
-
+        best_move = None
+        best_score = -100
         for move in moves:
             p2 = Position(p.position, p.mask)
             # It's opponent turn in P2 position after current player plays x column.
@@ -450,28 +445,41 @@ class Solver(object):
             # explore opponent's score within [-beta;-alpha] windows:
             # no need to have good precision for score better than beta (opponent's score worse than -beta)
             # no need to check for score worse than alpha (opponent's score worse better than -alpha)
-            score = -self.negamax(p2, -beta, -alpha)
+            score = -self.negamax(p2, -beta, -alpha)[0]
+            if score > best_score:
+                best_score = score
+                best_move = move
+
+            # if score == 12 and p.moves == 9:
+            #     print("here")
 
             if score >= beta:
                 # save the lower bound of the position
                 transposition_table.put(
-                    key, score + self.MAX_SCORE - 2 * self.MIN_SCORE + 2)
+                    key, ((score + self.MAX_SCORE - 2 * self.MIN_SCORE + 2), best_move))
                 # prune the exploration if we find a possible move better than what we were looking for.
-                return score
+                return (score, best_move)
 
             if score > alpha:
                 # reduce the [alpha;beta] window for next exploration, as we only
                 # need to search for a position that is better than the best so far.
                 alpha = score
-
+                best_move = move
+        # if p.moves == 37 and score == -1:
+        #     print("here")
         # save the upper bound of the position
-        transposition_table.put(key, alpha - self.MIN_SCORE + 1)
-        return alpha
+        transposition_table.put(key, (alpha - self.MIN_SCORE + 1, best_move))
+        return (alpha, best_move)
 
     def solve(self, p: Position, weak=False):
+
+        best_move = None
         # check if win in one move as the Negamax function does not support this case.
         if p.can_win_next():
-            return int((43 - p.moves) / 2)
+            for col in range(7):
+                if p.is_winning_move2(col) > 0:
+                    # print("my_agent_new winning move", col)
+                    return int((43 - p.moves + 1) / 2), (mask + bottom_mask_col(col)) & column_mask(col)
 
         min = int(-(42 - p.moves) / 2)
         max = int((43 - p.moves) / 2)
@@ -485,12 +493,18 @@ class Solver(object):
                 med = int(min / 2)
             elif med >= 0 and int(max / 2) > med:
                 med = int(max / 2)
-            r = self.negamax(p, med, med + 1)
+            r, move = self.negamax(p, med, med + 1)
+            
             if r <= med:
                 max = r
+                # shouldn't set best_move here as this is only upperbound
+                # if move != None:
+                #     best_move = move
             else:
                 min = r
-        return min
+                if move != None:
+                    best_move = move
+        return min, best_move
 
     def analyze(self, p: Position, weak=False):
         scores = dict()
@@ -502,7 +516,7 @@ class Solver(object):
                 else:
                     p2 = Position(p.position, p.mask)
                     p2.play(col)
-                    scores[col] = -self.solve(p2, weak)
+                    scores[col] = -self.solve(p2, weak)[0]
         return scores
                     
 def my_agent(obs, config):
@@ -559,10 +573,21 @@ def my_agent(obs, config):
                 return 6 - best_move
     # print(p.position, p.mask)
     # p.pretty_print()
-    scores = solver.analyze(p, weak)
-    max_cols = [key for key in scores.keys() if scores[key] == max(scores.values())]    
-    best_move = random.choice(max_cols) # Taking the center columns first
+    # scores = solver.analyze(p, weak)
+    # max_cols = [key for key in scores.keys() if scores[key] == max(scores.values())]    
+    # best_move = random.choice(max_cols) # Taking the center columns first
+    # if p.moves == 37:
+    #     print("here")
+    score, best_move = solver.solve(p, weak)
+    # print("score", score)
+    if best_move == None:   # we lost in next move, randomly pick a move
+        for i in range(7):
+            if p.can_play(solver.column_order[i]):
+                best_col = solver.column_order[i]
+                break
+    else:
+        best_col = move_to_col(best_move)
 
     end = time.time()
-    print("my_agent_new move #", p.moves+1, "time", (end-start), "move", best_move, "score", scores[best_move], "pos count", solver.node_count)
-    return best_move
+    print("my_agent_new move #", p.moves+1, "time", (end-start), "move", best_col, "score", score, "pos count", solver.node_count)
+    return best_col

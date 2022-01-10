@@ -359,14 +359,14 @@ class Solver(object):
         for i in range(7):
             self.column_order.append(7 // 2 + (1 - 2 * (i % 2)) * (i + 1) // 2)
 
-        global opening_book
-        if opening_book == None:
-            print("Loading opening book...")
-            opening_book = dict()
-            with open("./opening_book.24", 'rb') as f:
-                opening_book_data = f.read()
-                # opening_book = pickle.load(f)
-                opening_book = decompressAndDeserialize(opening_book_data)
+        # global opening_book
+        # if opening_book == None:
+        #     print("Loading opening book...")
+        #     opening_book = dict()
+        #     with open("./opening_book.24", 'rb') as f:
+        #         opening_book_data = f.read()
+        #         # opening_book = pickle.load(f)
+        #         opening_book = decompressAndDeserialize(opening_book_data)
 
     def negamax(self, p: Position, alpha, beta):
         """
@@ -375,24 +375,9 @@ class Solver(object):
         # assert(alpha < beta)
         # assert(not p.can_win_next())
 
+        alpha_orig = alpha
+
         self.node_count += 1    # increment counter of explored nodes
-
-        # if self.node_count % 100000 == 0:
-        #     print(self.node_count, "explored.")
-        #     print("Entering negamax with ", self.node_count, "nodes", alpha, beta)
-        #     print(p.position, p.mask)
-
-        # print("Entering negamax with ", self.node_count, "nodes", alpha, beta)
-        # print(p.position, p.mask)
-        # p.pretty_print()
-
-        # if self.node_count == 845:
-        #     print("stop here")
-
-        # if p.can_win_next():
-        #     # p.pretty_print()
-        #     # print("can win with score", (42 - p.moves) // 2)
-        #     return (42 - p.moves) // 2
 
         possible = p.possible_non_losing_moves()
         if possible == 0:   # if no possible non losing moves, opponent wins next move
@@ -420,9 +405,8 @@ class Solver(object):
                 return (beta, None)
 
         key = p.key()
-        entry = transposition_table.get(key)
-        if entry != None:
-            val, best_move = entry
+        val = transposition_table.get(key)
+        if val != None:
             if val > self.MAX_SCORE - self.MIN_SCORE + 1:   # we have a lower bound
                 min = val + 2 * self.MIN_SCORE - self.MAX_SCORE - 2
                 if alpha < min:
@@ -430,7 +414,7 @@ class Solver(object):
                     alpha = min
                     # prune the exploration if the [alpha;beta] window is empty.
                     if alpha >= beta:
-                        return (alpha, best_move)
+                        return (alpha, None)
 
             else:       # we have an upper bound
                 max = val + self.MIN_SCORE - 1
@@ -439,7 +423,7 @@ class Solver(object):
                     beta = max
                     # prune the exploration if the [alpha;beta] window is empty.
                     if alpha >= beta:
-                        return (beta, best_move)
+                        return (beta, None)
 
         moves = []
         for i in range(7):
@@ -463,27 +447,21 @@ class Solver(object):
             score = -self.negamax(p2, -beta, -alpha)[0]
             if score > best_score:
                 best_score = score
-                best_move = move
-
-            # if score == 12 and p.moves == 9:
-            #     print("here")
-
-            if score >= beta:
-                # save the lower bound of the position
-                transposition_table.put(
-                    key, ((score + self.MAX_SCORE - 2 * self.MIN_SCORE + 2), best_move))
-                # prune the exploration if we find a possible move better than what we were looking for.
-                return (score, best_move)
+                best_move = move        # Store the best move so we could return as well
 
             if score > alpha:
-                # reduce the [alpha;beta] window for next exploration, as we only
-                # need to search for a position that is better than the best so far.
                 alpha = score
-                best_move = move
-        # if p.moves == 37 and score == -1:
-        #     print("here")
-        # save the upper bound of the position
-        transposition_table.put(key, (alpha - self.MIN_SCORE + 1, best_move))
+
+            if alpha >= beta:
+                break
+
+        if best_score >= beta:
+            # save the lower bound of the position
+            transposition_table.put(
+                key, best_score + self.MAX_SCORE - 2 * self.MIN_SCORE + 2)
+        elif best_score <= alpha_orig: 
+            # save the upper bound of the position
+            transposition_table.put(key, best_score - self.MIN_SCORE + 1)
         return (alpha, best_move)
 
     def solve(self, p: Position, weak=False):
@@ -509,15 +487,13 @@ class Solver(object):
             elif med >= 0 and int(max / 2) > med:
                 med = int(max / 2)
             r, move = self.negamax(p, med, med + 1)
+            if move != None:
+                best_move = move
             
             if r <= med:
                 max = r
-                if move != None:
-                    best_move = move
             else:
                 min = r
-                if move != None:
-                    best_move = move
         return min, best_move
 
     def analyze(self, p: Position, weak=False):
@@ -623,10 +599,10 @@ print(position, mask)
 solver = Solver()
 p = Position(position, mask)
 # p.play_seq("4444443")
-p.play_seq("3464744323555")
+p.play_seq("444444326555553233322676235266611177")
 p.pretty_print()
-position, mask = 35254972727296, 136583988658304
-p = Position(position, mask)
+# position, mask = 35254972727296, 136583988658304
+# p = Position(position, mask)
 print("moves made so far", p.moves)
 # count = p.popcount(p.mask)
 # print("count", count)

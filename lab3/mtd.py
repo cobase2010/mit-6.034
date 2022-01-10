@@ -203,7 +203,7 @@ class Board:
     return best
  
   def best(self):
-    return self.__iterative_deepening(8)[1]
+    return self.__iterative_deepening(2)[1]
  
   def tied(self):
     for (x,y) in self.fields:
