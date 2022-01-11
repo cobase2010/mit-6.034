@@ -1,0 +1,604 @@
+Loading environment football failed: No module named 'gfootball'
+scoring  <function my_agent at 0x103ddae50>
+Loading opening book...
+my_agent_new move # 11 time 0.41654086112976074 move 3 score 11 pos count 1174
+Perfect!
+Good!
+my_agent_new move # 11 time 0.37615394592285156 move 3 score 9 pos count 24063
+Perfect!
+Good!
+my_agent_new move # 12 time 0.000621795654296875 move 2 score 14 pos count 35
+Perfect!
+Good!
+my_agent_new move # 12 time 0.05350303649902344 move 2 score 11 pos count 3184
+Perfect!
+Good!
+my_agent_new move # 12 time 0.0005488395690917969 move 2 score 14 pos count 21
+Perfect!
+Good!
+my_agent_new move # 12 time 0.6771678924560547 move 1 score 9 pos count 33727
+Perfect!
+Good!
+my_agent_new move # 12 time 0.24034690856933594 move 3 score -10 pos count 13222
+Perfect!
+Good!
+my_agent_new move # 12 time 0.11115312576293945 move 2 score 12 pos count 6726
+Perfect!
+Good!
+my_agent_new move # 12 time 0.1845090389251709 move 3 score 11 pos count 10996
+Perfect!
+Good!
+my_agent_new move # 13 time 0.0004570484161376953 move 4 score 13 pos count 25
+Perfect!
+Good!
+my_agent_new move # 13 time 0.5508151054382324 move 0 score -13 pos count 32192
+Perfect!
+Good!
+my_agent_new move # 13 time 0.10648894309997559 move 3 score 13 pos count 5830
+Perfect!
+Good!
+my_agent_new move # 13 time 0.18204998970031738 move 6 score -10 pos count 7975
+Perfect!
+Good!
+my_agent_new move # 13 time 0.0017938613891601562 move 2 score 12 pos count 87
+Perfect!
+Good!
+my_agent_new move # 13 time 0.10213208198547363 move 3 score 11 pos count 3995
+Perfect!
+Good!
+my_agent_new move # 13 time 0.16265082359313965 move 4 score 11 pos count 7769
+Perfect!
+Good!
+my_agent_new move # 13 time 0.000762939453125 move 0 score 13 pos count 46
+Perfect!
+Good!
+my_agent_new move # 13 time 0.00023508071899414062 move 3 score -14 pos count 10
+Not perfect
+{'mark': 1, 'board': [0, 0, 2, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 2, 2, 0, 0, 0, 0, 1, 1, 1, 2, 2, 2, 0]}
+Good!
+my_agent_new move # 13 time 0.0002739429473876953 move 1 score -13 pos count 16
+Perfect!
+Good!
+my_agent_new move # 13 time 0.018100976943969727 move 3 score 12 pos count 1109
+Perfect!
+Good!
+my_agent_new move # 13 time 0.0006997585296630859 move 3 score 12 pos count 44
+Perfect!
+Good!
+my_agent_new move # 13 time 0.00030684471130371094 move 3 score 13 pos count 15
+Perfect!
+Good!
+my_agent_new move # 14 time 0.21720504760742188 move 5 score 12 pos count 11260
+Perfect!
+Good!
+my_agent_new move # 14 time 0.20659494400024414 move 5 score 9 pos count 8940
+Perfect!
+Good!
+my_agent_new move # 14 time 0.2230989933013916 move 3 score 10 pos count 9237
+Perfect!
+Good!
+my_agent_new move # 14 time 0.37522077560424805 move 1 score 9 pos count 16621
+Perfect!
+Good!
+my_agent_new move # 14 time 0.11052608489990234 move 3 score 9 pos count 7220
+Perfect!
+Good!
+my_agent_new move # 14 time 0.06653499603271484 move 4 score 13 pos count 3670
+Perfect!
+Good!
+my_agent_new move # 14 time 0.11285090446472168 move 3 score 13 pos count 6876
+Perfect!
+Good!
+my_agent_new move # 14 time 0.00039887428283691406 move 1 score 13 pos count 21
+Perfect!
+Good!
+my_agent_new move # 14 time 0.00030803680419921875 move 2 score 14 pos count 14
+Perfect!
+Good!
+my_agent_new move # 14 time 0.4414980411529541 move 0 score -11 pos count 25592
+Perfect!
+Good!
+my_agent_new move # 14 time 0.00040602684020996094 move 3 score 13 pos count 21
+Perfect!
+Good!
+my_agent_new move # 14 time 0.0010938644409179688 move 2 score 12 pos count 62
+Perfect!
+Good!
+my_agent_new move # 14 time 0.00028395652770996094 move 2 score 13 pos count 15
+Perfect!
+Good!
+my_agent_new move # 14 time 0.04394388198852539 move 2 score 10 pos count 2673
+Perfect!
+Good!
+my_agent_new move # 14 time 0.07113528251647949 move 4 score 11 pos count 4244
+Perfect!
+Good!
+my_agent_new move # 14 time 0.13739299774169922 move 4 score 9 pos count 7309
+Perfect!
+Good!
+my_agent_new move # 14 time 0.04913592338562012 move 4 score -12 pos count 880
+Perfect!
+Good!
+my_agent_new move # 14 time 0.003426074981689453 move 3 score 12 pos count 69
+Perfect!
+Good!
+my_agent_new move # 14 time 0.0009379386901855469 move 5 score -12 pos count 16
+Perfect!
+Good!
+my_agent_new move # 14 time 0.05396008491516113 move 1 score -11 pos count 945
+Perfect!
+Good!
+my_agent_new move # 14 time 0.012424230575561523 move 4 score 13 pos count 290
+Perfect!
+Good!
+my_agent_new move # 14 time 0.4575819969177246 move 0 score -9 pos count 16030
+Perfect!
+Good!
+my_agent_new move # 14 time 0.014296770095825195 move 4 score 10 pos count 820
+Perfect!
+Good!
+my_agent_new move # 14 time 0.13785290718078613 move 4 score 14 pos count 5525
+Perfect!
+Good!
+my_agent_new move # 14 time 0.000659942626953125 move 2 score 13 pos count 21
+Perfect!
+Good!
+my_agent_new move # 14 time 0.05543231964111328 move 2 score 9 pos count 2577
+Perfect!
+Good!
+my_agent_new move # 14 time 0.0004711151123046875 move 2 score 13 pos count 20
+Perfect!
+Good!
+my_agent_new move # 15 time 0.001828908920288086 move 1 score 11 pos count 68
+Perfect!
+Good!
+my_agent_new move # 15 time 0.037470102310180664 move 6 score 10 pos count 1693
+Perfect!
+Good!
+my_agent_new move # 15 time 0.03801989555358887 move 6 score -11 pos count 1798
+Perfect!
+Good!
+my_agent_new move # 15 time 0.0015919208526611328 move 4 score 11 pos count 80
+Perfect!
+Good!
+my_agent_new move # 15 time 0.13916015625 move 3 score 9 pos count 5071
+Perfect!
+Good!
+my_agent_new move # 15 time 0.0013580322265625 move 3 score 11 pos count 64
+Perfect!
+Good!
+Move 15 Playing mirrored best move from the book 2
+Perfect!
+Good!
+my_agent_new move # 15 time 0.0006840229034423828 move 1 score 11 pos count 38
+Perfect!
+Good!
+my_agent_new move # 15 time 0.019127845764160156 move 3 score -11 pos count 959
+Perfect!
+Good!
+my_agent_new move # 15 time 0.08026504516601562 move 2 score 9 pos count 3599
+Perfect!
+Good!
+my_agent_new move # 15 time 0.0007181167602539062 move 1 score 12 pos count 39
+Perfect!
+Good!
+my_agent_new move # 15 time 0.008107900619506836 move 1 score 11 pos count 451
+Perfect!
+Good!
+my_agent_new move # 15 time 0.13181614875793457 move 5 score 9 pos count 4758
+Perfect!
+Good!
+my_agent_new move # 15 time 0.0025281906127929688 move 4 score 12 pos count 138
+Perfect!
+Good!
+my_agent_new move # 15 time 0.0014710426330566406 move 3 score 11 pos count 88
+Perfect!
+Good!
+my_agent_new move # 15 time 0.3384699821472168 move 4 score 9 pos count 16750
+Perfect!
+Good!
+my_agent_new move # 15 time 0.017930984497070312 move 3 score 11 pos count 933
+Perfect!
+Good!
+my_agent_new move # 15 time 0.1516880989074707 move 6 score -11 pos count 8201
+Perfect!
+Good!
+my_agent_new move # 15 time 0.03732919692993164 move 3 score -10 pos count 2326
+Perfect!
+Good!
+my_agent_new move # 15 time 0.12688994407653809 move 6 score 9 pos count 7411
+Perfect!
+Good!
+my_agent_new move # 15 time 0.09475588798522949 move 3 score -10 pos count 5772
+Perfect!
+Good!
+my_agent_new move # 15 time 0.009953975677490234 move 5 score 12 pos count 528
+Perfect!
+Good!
+my_agent_new move # 15 time 0.007033109664916992 move 4 score 13 pos count 381
+Perfect!
+Good!
+my_agent_new move # 15 time 0.15135407447814941 move 4 score 10 pos count 8837
+Perfect!
+Good!
+my_agent_new move # 15 time 0.0003898143768310547 move 3 score 12 pos count 19
+Perfect!
+Good!
+my_agent_new move # 15 time 0.0003819465637207031 move 2 score 12 pos count 19
+Perfect!
+Good!
+my_agent_new move # 15 time 0.003930091857910156 move 3 score 10 pos count 262
+Perfect!
+Good!
+my_agent_new move # 15 time 0.019918203353881836 move 0 score 12 pos count 1240
+Perfect!
+Good!
+my_agent_new move # 15 time 0.006434202194213867 move 3 score 10 pos count 434
+Perfect!
+Good!
+my_agent_new move # 15 time 0.041114091873168945 move 4 score 10 pos count 2552
+Perfect!
+Good!
+my_agent_new move # 15 time 0.0003848075866699219 move 4 score 12 pos count 19
+Perfect!
+Good!
+my_agent_new move # 15 time 0.002650022506713867 move 2 score 10 pos count 170
+Perfect!
+Good!
+my_agent_new move # 15 time 0.006521701812744141 move 5 score 9 pos count 356
+Perfect!
+Good!
+my_agent_new move # 15 time 0.03397822380065918 move 5 score 12 pos count 2116
+Perfect!
+Good!
+my_agent_new move # 16 time 0.000990152359008789 move 4 score 11 pos count 58
+Perfect!
+Good!
+my_agent_new move # 16 time 0.02065896987915039 move 3 score 9 pos count 1169
+Perfect!
+Good!
+my_agent_new move # 16 time 0.0003008842468261719 move 2 score 12 pos count 13
+Perfect!
+Good!
+my_agent_new move # 16 time 0.0004801750183105469 move 4 score -11 pos count 28
+Perfect!
+Good!
+my_agent_new move # 16 time 0.00033402442932128906 move 3 score 12 pos count 19
+Perfect!
+Good!
+my_agent_new move # 16 time 0.07862496376037598 move 4 score 10 pos count 4591
+Perfect!
+Good!
+my_agent_new move # 16 time 0.024633169174194336 move 1 score 12 pos count 1541
+Perfect!
+Good!
+my_agent_new move # 16 time 0.005210161209106445 move 3 score 11 pos count 307
+Perfect!
+Good!
+my_agent_new move # 16 time 0.0006189346313476562 move 3 score -12 pos count 28
+Not perfect
+{'mark': 2, 'board': [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 2, 0, 0, 2, 1, 2, 2, 1, 0, 1, 1, 2, 2, 1, 2, 1]}
+Good!
+my_agent_new move # 16 time 0.014765739440917969 move 6 score 12 pos count 973
+Perfect!
+Good!
+my_agent_new move # 16 time 0.05595803260803223 move 3 score 10 pos count 3337
+Perfect!
+Good!
+my_agent_new move # 16 time 0.0002961158752441406 move 4 score 12 pos count 13
+Perfect!
+Good!
+my_agent_new move # 16 time 0.01587390899658203 move 3 score 12 pos count 974
+Perfect!
+Good!
+my_agent_new move # 16 time 0.026181936264038086 move 4 score 10 pos count 1519
+Perfect!
+Good!
+my_agent_new move # 16 time 0.0353090763092041 move 2 score 9 pos count 1998
+Perfect!
+Good!
+my_agent_new move # 16 time 0.0028352737426757812 move 0 score -11 pos count 122
+Perfect!
+Good!
+my_agent_new move # 16 time 0.0002727508544921875 move 3 score -12 pos count 8
+Perfect!
+Good!
+my_agent_new move # 16 time 0.038977861404418945 move 4 score 9 pos count 2065
+Perfect!
+Good!
+my_agent_new move # 16 time 0.09342575073242188 move 2 score 10 pos count 5134
+Perfect!
+Good!
+my_agent_new move # 16 time 0.05477404594421387 move 4 score 9 pos count 2975
+Perfect!
+Good!
+my_agent_new move # 16 time 0.024007320404052734 move 3 score 9 pos count 1159
+Perfect!
+Good!
+my_agent_new move # 16 time 0.0009768009185791016 move 6 score -11 pos count 49
+Perfect!
+Good!
+my_agent_new move # 16 time 0.04864692687988281 move 3 score -10 pos count 2339
+Perfect!
+Good!
+my_agent_new move # 16 time 0.001405954360961914 move 3 score 11 pos count 85
+Perfect!
+Good!
+my_agent_new move # 16 time 0.00035309791564941406 move 2 score 12 pos count 19
+Perfect!
+Good!
+my_agent_new move # 16 time 0.0003859996795654297 move 1 score 12 pos count 19
+Perfect!
+Good!
+my_agent_new move # 16 time 0.01485586166381836 move 4 score 10 pos count 795
+Perfect!
+Good!
+my_agent_new move # 16 time 0.0014848709106445312 move 3 score 11 pos count 90
+Perfect!
+Good!
+my_agent_new move # 16 time 0.0009288787841796875 move 3 score 11 pos count 49
+Perfect!
+Good!
+my_agent_new move # 16 time 0.0066030025482177734 move 1 score 9 pos count 333
+Perfect!
+Good!
+my_agent_new move # 16 time 0.003961801528930664 move 1 score 12 pos count 210
+Perfect!
+Good!
+my_agent_new move # 16 time 0.000354766845703125 move 4 score 12 pos count 18
+Perfect!
+Good!
+my_agent_new move # 16 time 0.0005338191986083984 move 0 score 12 pos count 29
+Perfect!
+Good!
+my_agent_new move # 16 time 0.03159022331237793 move 2 score 10 pos count 1732
+Perfect!
+Good!
+my_agent_new move # 16 time 0.0035219192504882812 move 1 score 11 pos count 198
+Perfect!
+Good!
+my_agent_new move # 16 time 0.0007519721984863281 move 2 score 12 pos count 37
+Perfect!
+Good!
+my_agent_new move # 16 time 0.15573406219482422 move 1 score 13 pos count 8374
+Perfect!
+Good!
+my_agent_new move # 16 time 0.009841203689575195 move 4 score 11 pos count 546
+Perfect!
+Good!
+my_agent_new move # 16 time 0.0457000732421875 move 2 score 11 pos count 2320
+Perfect!
+Good!
+my_agent_new move # 16 time 0.03282785415649414 move 5 score 11 pos count 2099
+Perfect!
+Good!
+my_agent_new move # 16 time 0.0752558708190918 move 5 score 12 pos count 4239
+Perfect!
+Good!
+my_agent_new move # 16 time 0.16313385963439941 move 4 score -11 pos count 7634
+Perfect!
+Good!
+my_agent_new move # 16 time 0.026559114456176758 move 3 score 10 pos count 1661
+Perfect!
+Good!
+my_agent_new move # 16 time 0.07421326637268066 move 2 score 10 pos count 4342
+Perfect!
+Good!
+my_agent_new move # 16 time 0.012708902359008789 move 5 score -9 pos count 752
+Perfect!
+Good!
+my_agent_new move # 16 time 0.019969940185546875 move 2 score 13 pos count 1176
+Perfect!
+Good!
+my_agent_new move # 16 time 0.048828125 move 0 score -10 pos count 2661
+Perfect!
+Good!
+my_agent_new move # 16 time 0.003242015838623047 move 3 score 12 pos count 193
+Perfect!
+Good!
+my_agent_new move # 16 time 0.0004153251647949219 move 5 score -11 pos count 22
+Perfect!
+Good!
+my_agent_new move # 16 time 0.0003311634063720703 move 2 score 13 pos count 14
+Perfect!
+Good!
+my_agent_new move # 16 time 0.029967784881591797 move 4 score -10 pos count 1669
+Perfect!
+Good!
+my_agent_new move # 16 time 0.0003829002380371094 move 4 score 12 pos count 19
+Perfect!
+Good!
+my_agent_new move # 16 time 0.023270130157470703 move 4 score 9 pos count 1244
+Perfect!
+Good!
+my_agent_new move # 16 time 0.0015079975128173828 move 1 score 13 pos count 78
+Perfect!
+Good!
+my_agent_new move # 16 time 0.0006237030029296875 move 4 score -11 pos count 36
+Perfect!
+Good!
+my_agent_new move # 16 time 0.0011951923370361328 move 5 score 11 pos count 64
+Perfect!
+Good!
+my_agent_new move # 16 time 0.0029358863830566406 move 4 score 11 pos count 185
+Perfect!
+Good!
+my_agent_new move # 16 time 0.0009391307830810547 move 4 score 11 pos count 67
+Perfect!
+Good!
+my_agent_new move # 16 time 0.000576019287109375 move 1 score 12 pos count 33
+Perfect!
+Good!
+my_agent_new move # 16 time 0.08762288093566895 move 2 score 9 pos count 5008
+Perfect!
+Good!
+my_agent_new move # 16 time 0.10840296745300293 move 2 score 10 pos count 5794
+Perfect!
+Good!
+my_agent_new move # 16 time 0.04004096984863281 move 3 score 13 pos count 1993
+Perfect!
+Good!
+my_agent_new move # 16 time 0.2964060306549072 move 3 score -12 pos count 14988
+Perfect!
+Good!
+my_agent_new move # 16 time 0.007092952728271484 move 4 score 11 pos count 349
+Perfect!
+Good!
+my_agent_new move # 16 time 0.07143425941467285 move 0 score 12 pos count 3810
+Perfect!
+Good!
+my_agent_new move # 16 time 0.046949148178100586 move 5 score 10 pos count 2807
+Perfect!
+Good!
+my_agent_new move # 16 time 0.011897087097167969 move 3 score 12 pos count 746
+Perfect!
+Good!
+my_agent_new move # 16 time 0.016213178634643555 move 4 score 9 pos count 923
+Perfect!
+Good!
+my_agent_new move # 16 time 0.0006401538848876953 move 3 score -11 pos count 32
+Perfect!
+Good!
+my_agent_new move # 16 time 0.015902996063232422 move 4 score -9 pos count 990
+Perfect!
+Good!
+my_agent_new move # 16 time 0.0036520957946777344 move 3 score 10 pos count 253
+Perfect!
+Good!
+my_agent_new move # 16 time 0.0011017322540283203 move 1 score 12 pos count 58
+Perfect!
+Good!
+my_agent_new move # 16 time 0.00757288932800293 move 3 score 12 pos count 478
+Perfect!
+Good!
+my_agent_new move # 16 time 0.006845235824584961 move 3 score 12 pos count 431
+Perfect!
+Good!
+my_agent_new move # 16 time 0.004464864730834961 move 2 score 11 pos count 271
+Perfect!
+Good!
+my_agent_new move # 16 time 0.035108089447021484 move 0 score 12 pos count 1602
+Perfect!
+Good!
+my_agent_new move # 16 time 0.07674694061279297 move 3 score -12 pos count 3348
+Not perfect
+{'mark': 2, 'board': [0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 2, 0, 0, 0, 0, 2, 1, 1, 0, 1, 2, 0, 2, 1, 2, 0, 2, 1, 1]}
+Good!
+my_agent_new move # 16 time 0.02652597427368164 move 4 score 10 pos count 1257
+Perfect!
+Good!
+my_agent_new move # 16 time 0.0003190040588378906 move 2 score -12 pos count 8
+Perfect!
+Good!
+my_agent_new move # 16 time 0.0003838539123535156 move 3 score 13 pos count 14
+Perfect!
+Good!
+my_agent_new move # 16 time 0.028281211853027344 move 3 score -12 pos count 1290
+Perfect!
+Good!
+my_agent_new move # 16 time 0.009550094604492188 move 3 score 12 pos count 529
+Perfect!
+Good!
+my_agent_new move # 16 time 0.0004210472106933594 move 4 score 12 pos count 19
+Perfect!
+Good!
+my_agent_new move # 16 time 0.0013806819915771484 move 3 score 11 pos count 84
+Perfect!
+Good!
+my_agent_new move # 16 time 0.025137901306152344 move 2 score 9 pos count 1505
+Perfect!
+Good!
+my_agent_new move # 16 time 0.051621198654174805 move 1 score 12 pos count 3077
+Perfect!
+Good!
+my_agent_new move # 16 time 0.0002498626708984375 move 3 score -12 pos count 8
+Not perfect
+{'mark': 2, 'board': [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 1, 2, 2, 1, 0, 2, 2, 1, 1, 2, 2, 2, 1]}
+Good!
+my_agent_new move # 16 time 0.00039124488830566406 move 3 score -11 pos count 21
+Perfect!
+Good!
+my_agent_new move # 16 time 0.013186216354370117 move 2 score -11 pos count 781
+Perfect!
+Good!
+my_agent_new move # 16 time 0.009971857070922852 move 5 score 10 pos count 711
+Perfect!
+Good!
+my_agent_new move # 17 time 0.0006091594696044922 move 4 score 11 pos count 34
+Perfect!
+Good!
+my_agent_new move # 17 time 0.0365900993347168 move 0 score -10 pos count 2051
+Perfect!
+Good!
+my_agent_new move # 17 time 0.001889944076538086 move 2 score 11 pos count 107
+Perfect!
+Good!
+my_agent_new move # 17 time 0.00031495094299316406 move 3 score -11 pos count 16
+Perfect!
+Good!
+my_agent_new move # 17 time 0.0011761188507080078 move 3 score 11 pos count 61
+Perfect!
+Good!
+my_agent_new move # 17 time 0.00994873046875 move 5 score 10 pos count 575
+Perfect!
+Good!
+my_agent_new move # 17 time 0.1885368824005127 move 5 score 12 pos count 10133
+Perfect!
+Good!
+my_agent_new move # 17 time 0.18636322021484375 move 5 score -11 pos count 9064
+Perfect!
+Good!
+my_agent_new move # 17 time 0.017786026000976562 move 5 score 11 pos count 990
+Perfect!
+Good!
+my_agent_new move # 17 time 0.0002620220184326172 move 3 score -12 pos count 8
+Perfect!
+Good!
+my_agent_new move # 17 time 0.00879979133605957 move 4 score 10 pos count 467
+Perfect!
+Good!
+my_agent_new move # 17 time 0.0059490203857421875 move 2 score -11 pos count 323
+Perfect!
+Good!
+my_agent_new move # 17 time 0.005633115768432617 move 6 score -11 pos count 305
+Perfect!
+Good!
+my_agent_new move # 17 time 0.018857955932617188 move 3 score -10 pos count 1044
+Perfect!
+Good!
+my_agent_new move # 17 time 0.02207803726196289 move 6 score -11 pos count 1030
+Perfect!
+Good!
+my_agent_new move # 17 time 0.0006978511810302734 move 2 score 11 pos count 35
+Perfect!
+Good!
+my_agent_new move # 17 time 0.028584957122802734 move 0 score 10 pos count 1874
+Perfect!
+Good!
+my_agent_new move # 17 time 0.0022840499877929688 move 6 score -11 pos count 123
+Perfect!
+Good!
+my_agent_new move # 17 time 0.047033071517944336 move 4 score 10 pos count 2789
+Perfect!
+Good!
+my_agent_new move # 17 time 0.06224203109741211 move 6 score 9 pos count 3698
+Perfect!
+Good!
+my_agent_new move # 17 time 0.0059528350830078125 move 6 score -11 pos count 321
+Perfect!
+Good!
+my_agent_new move # 17 time 0.034295082092285156 move 4 score 10 pos count 2014
+Perfect!
+Good!
+my_agent_new move # 17 time 0.0002429485321044922 move 3 score -12 pos count 8
+Not perfect
+{'mark': 1, 'board': [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 0, 0, 0, 0, 0, 2, 2, 0, 0, 1, 0, 0, 2, 2, 0, 0, 2, 0, 1, 2, 1, 0, 0, 1, 1, 2, 1, 1]}
+Good!
+my_agent_new move # 17 time 0.026324987411499023 move 1 score 10 pos count 1775
+Perfect!
+Good!
+my_agent_new move # 17 time 0.04806876182556152 move 0 score 12 pos count 2821
+Perfect!
+Good!
+perfect move percentage:  0.9747474747474747
+good moves percentage:  1.0

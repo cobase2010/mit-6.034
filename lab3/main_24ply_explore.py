@@ -355,7 +355,7 @@ class Solver(object):
         if opening_book == None:
             print("Loading opening book...")
             opening_book = dict()
-            with open("/kaggle_simulations/agent/opening_book.24", 'rb') as f:
+            with open("./opening_book.24", 'rb') as f:
                 opening_book_data = f.read()
                 # opening_book = pickle.load(f)
                 opening_book = decompressAndDeserialize(opening_book_data)
@@ -566,3 +566,70 @@ def my_agent(obs, config):
     end = time.time()
     print("my_agent_new move #", p.moves+1, "time", (end-start), "move", best_move, "score", scores[best_move], "pos count", solver.node_count)
     return best_move
+
+# import json
+# from kaggle_environments.utils import structify
+
+# def win_loss_draw(score):
+#     if score>0: 
+#         return 'win'
+#     if score<0: 
+#         return 'loss'
+#     return 'draw'
+
+# def score(agent, max_lines = 1000):
+#     #Scores a connect-x agent with the dataset
+#     print("scoring ",agent)
+#     count = 0
+#     good_move_count = 0
+#     perfect_move_count = 0
+#     observation = structify({'mark': None, 'board': None})
+#     with open("./connect4/refmoves1k_kaggle") as f:
+#         for line in f:
+            
+#             data = json.loads(line)
+#             moves = data["move score"]
+#             perfect_score = max(moves)
+#             if abs(perfect_score) < 9:
+#                 continue
+#             observation.board = data["board"]
+#             # find out how many moves are played to set the correct mark.
+#             ply = len([x for x in data["board"] if x>0])
+#             if ply&1:
+#                 observation.mark = 2
+#             else:
+#                 observation.mark = 1
+            
+#             #call the agent
+#             agent_move = agent(observation,env.configuration)
+#             count += 1
+            
+#             perfect_moves = [ i for i in range(7) if moves[i]==perfect_score]
+
+#             if(agent_move in perfect_moves):
+#                 perfect_move_count += 1
+#                 print("Perfect!")
+#             else:
+#                 print("Not perfect")
+#                 print(observation)
+
+#             if win_loss_draw(moves[agent_move]) == win_loss_draw(perfect_score):
+#                 good_move_count += 1
+#                 print("Good!")
+#             else:
+#                 print("Not Good")
+
+#             if count == max_lines:
+#                 break
+
+#         print("perfect move percentage: ",perfect_move_count/count)
+#         print("good moves percentage: ",good_move_count/count)
+
+# # Score the 2 built in agents
+# from kaggle_environments import make
+# env = make("connectx")
+# # the built in agents are remarkably slow so only evaluating on 100 moves here
+# # score(env.agents["random"],100)  
+# # score(env.agents["negamax"],100)
+# # score(my_agent, 100)
+# score(my_agent, 1000)

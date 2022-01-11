@@ -153,6 +153,8 @@ def move_to_col(move):
     """
     Convert move bitmap to column number (zero indexed)
     """
+    if move == None:
+        return None
     for i in range(7):
         if move >> 7 * (i+1) == 0:
             return i
@@ -171,6 +173,7 @@ class Position(object):
         self.mask = mask
         # TODO: do this only once, not when creating child positions as we already have moves by then
         self.moves = bitboardBits(self.mask)
+        self.best_move = None
 
     @classmethod
     def get_position_mask_bitmap(self, grid, mark):
@@ -359,62 +362,69 @@ class Solver(object):
         for i in range(7):
             self.column_order.append(7 // 2 + (1 - 2 * (i % 2)) * (i + 1) // 2)
 
-        # global opening_book
-        # if opening_book == None:
-        #     print("Loading opening book...")
-        #     opening_book = dict()
-        #     with open("./opening_book.24", 'rb') as f:
-        #         opening_book_data = f.read()
-        #         # opening_book = pickle.load(f)
-        #         opening_book = decompressAndDeserialize(opening_book_data)
+        global opening_book
+        if opening_book == None:
+            print("Loading opening book...")
+            opening_book = dict()
+            with open("/Users/markyoung/Projects/mit-6.034/lab3/opening_book.24", 'rb') as f:
+                opening_book_data = f.read()
+                # opening_book = pickle.load(f)
+                opening_book = decompressAndDeserialize(opening_book_data)
 
     def negamax(self, p: Position, alpha, beta):
         """
-        Negamax to solve a position without depth
+        Alpha-beta with Memory to solve a position without depth
         """
         # assert(alpha < beta)
         # assert(not p.can_win_next())
-
         alpha_orig = alpha
+        best_move = p.best_move
 
         self.node_count += 1    # increment counter of explored nodes
 
         possible = p.possible_non_losing_moves()
         if possible == 0:   # if no possible non losing moves, opponent wins next move
-            # p.pretty_print()
-            # print("opponent wins with score ", -(42 - p.moves) // 2)
-            return (int(-(42 - p.moves) / 2), None)
+            return int(-(42 - p.moves) / 2)
 
         if p.moves >= 40:  # check for draw game
             # print("draw game")
-            return (0, None)
+            for i in range(7):
+                move = possible & column_mask(self.column_order[i])
+                if move != 0:   # don't add none move
+                    p.best_move = move
+                    break
+            return 0
 
         # lower bound of score as opponent cannot win next move
         min = int(-(40 - p.moves) / 2)
         if alpha < min:
-            alpha = min             # there is no need to keep alpha below our max possible score
+            alpha = min             # there is no need to keep alpha below our min possible score
             # prune the exploration if the [alpha:beta] window is empty
             if alpha >= beta:
-                return (alpha, None)
+                return alpha
 
         max = (41 - p.moves) // 2
         if beta > max:
             beta = max              # there is no need to keep beta above our max possible score
             # prune the exploration if [alpha:beta] window is empty
             if alpha >= beta:
-                return (beta, None)
+                return beta
 
-        key = p.key3()
-        val = transposition_table.get(key)
-        if val != None:
+        key = p.key()
+        entry = transposition_table.get(key)
+        if entry != None:
+            val, best_move2 = entry
             if val > self.MAX_SCORE - self.MIN_SCORE + 1:   # we have a lower bound
                 min = val + 2 * self.MIN_SCORE - self.MAX_SCORE - 2
                 if alpha < min:
-                    # here is no need to keep beta above our max possible score.
+                    # here is no need to keep alpha below our min possible score.
                     alpha = min
+                    best_move = best_move2    # Setting the current best_move from previous table entry
                     # prune the exploration if the [alpha;beta] window is empty.
                     if alpha >= beta:
-                        return (alpha, None)
+                        if best_move != None:
+                            p.best_move = best_move # Set best_move before cutting off
+                        return alpha
 
             else:       # we have an upper bound
                 max = val + self.MIN_SCORE - 1
@@ -423,7 +433,7 @@ class Solver(object):
                     beta = max
                     # prune the exploration if the [alpha;beta] window is empty.
                     if alpha >= beta:
-                        return (beta, None)
+                        return beta
 
         moves = []
         for i in range(7):
@@ -432,40 +442,46 @@ class Solver(object):
                 moves.append(move)
 
         moves.sort(reverse=True, key=lambda move: p.move_score(move))
-        best_move = None
+        # This is super important!!! Initializing best_move to the first in moves.
+        # It handles the cases where aggressive min/max prunning might have best_move uninitialized otherwise.
+        if best_move == None:   
+            best_move = moves[0]
         best_score = alpha
         for move in moves:
             p2 = Position(p.position, p.mask)
             # It's opponent turn in P2 position after current player plays x column.
             p2.play_move(move)
 
-            # assert(p2.position != p.position)
-
             # explore opponent's score within [-beta;-alpha] windows:
             # no need to have good precision for score better than beta (opponent's score worse than -beta)
             # no need to check for score worse than alpha (opponent's score worse better than -alpha)
-            score = -self.negamax(p2, -beta, -alpha)[0]
-        
-            if score >= best_score:
+            score = -self.negamax(p2, -beta, -alpha)
+            if score > best_score:
                 best_score = score
-                best_move = move        # Store the best move so we could return as well
+                best_move = move
 
-            if score > alpha:
-                alpha = score
-
-            if alpha >= beta:
+            if score >= beta:
+                # prune the exploration if we find a possible move better than what we were looking for.
                 break
 
+            if score > alpha:
+                # reduce the [alpha;beta] window for next exploration, as we only
+                # need to search for a position that is better than the best so far.
+                alpha = score
+
         if best_score >= beta:
-            # save the lower bound of the position
-            # print("storing upper bound", best_score + self.MAX_SCORE - 2 * self.MIN_SCORE + 2)
+            # save the lower bound of the position, as well as best_move
             transposition_table.put(
-                key, best_score + self.MAX_SCORE - 2 * self.MIN_SCORE + 2)
-        elif best_score <= alpha_orig: 
-            # save the upper bound of the position
-            # print("storing lower bound", best_score - self.MIN_SCORE + 1)
-            transposition_table.put(key, best_score - self.MIN_SCORE + 1)
-        return (best_score, best_move)
+                    key, ((score + self.MAX_SCORE - 2 * self.MIN_SCORE + 2), best_move))
+            if best_move != None:
+                p.best_move = best_move
+            
+        elif best_score < alpha_orig:
+        # save the upper bound of the position, no need to cache best_move
+            transposition_table.put(key, (alpha - self.MIN_SCORE + 1, None))
+        if best_move != None:
+            p.best_move = best_move
+        return best_score
 
     def solve(self, p: Position, weak=False):
 
@@ -475,7 +491,7 @@ class Solver(object):
             for col in range(7):
                 if p.is_winning_move2(col) > 0:
                     # print("my_agent_new winning move", col)
-                    return int((43 - p.moves + 1) / 2), (mask + bottom_mask_col(col)) & column_mask(col)
+                    return int((43 - p.moves + 1) / 2)
 
         min = int(-(42 - p.moves) / 2)
         max = int((43 - p.moves) / 2)
@@ -489,15 +505,14 @@ class Solver(object):
                 med = int(min / 2)
             elif med >= 0 and int(max / 2) > med:
                 med = int(max / 2)
-            r, move = self.negamax(p, med, med + 1)
-            if move != None:
-                best_move = move
+            r= self.negamax(p, med, med + 1)
             
             if r <= med:
-                max = r
+                max = r    
             else:
                 min = r
-        return min, best_move
+                
+        return min
 
     def analyze(self, p: Position, weak=False):
         scores = dict()
@@ -509,7 +524,7 @@ class Solver(object):
                 else:
                     p2 = Position(p.position, p.mask)
                     p2.play(col)
-                    scores[col] = -self.solve(p2, weak)[0]
+                    scores[col] = -self.solve(p2, weak)
         return scores
                     
 def my_agent(obs, config):
@@ -550,7 +565,7 @@ def my_agent(obs, config):
     # book storage: key -> move
     # during generation, we use key3 to not store transposed positions
     # at lookup time, if key doesn't exist, mirror the current position and check again if found, return mirrored col
-    if p.moves < 26:
+    if p.moves < 27:
         p2 = Position(position, mask)
         key = p2.key()
         if key in opening_book:
@@ -564,71 +579,158 @@ def my_agent(obs, config):
                 best_move = opening_book[key2]
                 print("Move", p.moves + 1, "Playing mirrored best move from the book", 6 - best_move)
                 return 6 - best_move
-    # print(p.position, p.mask)
-    # p.pretty_print()
+    
     # scores = solver.analyze(p, weak)
     # max_cols = [key for key in scores.keys() if scores[key] == max(scores.values())]    
     # best_move = random.choice(max_cols) # Taking the center columns first
-    # if p.moves == 37:
+    # if p.moves >= 39:
     #     print("here")
-    score, best_move = solver.solve(p, weak)
+    score = solver.solve(p, weak)
     # print("score", score)
-    if best_move == None:   # we lost in next move, randomly pick a move
+    if p.best_move == None:   # we lost next move, just play any move
         for i in range(7):
-            if p.can_play(solver.column_order[i]):
-                best_col = solver.column_order[i]
+            if p.can_play(i):
+                best_col = i
                 break
     else:
-        best_col = move_to_col(best_move)
+        best_col = move_to_col(p.best_move)
 
     end = time.time()
     print("my_agent_new move #", p.moves+1, "time", (end-start), "move", best_col, "score", score, "pos count", solver.node_count)
     return best_col
 
+import json
+from kaggle_environments.utils import structify
 
-import cProfile, pstats, io
-from pstats import SortKey
+def win_loss_draw(score):
+    if score>0: 
+        return 'win'
+    if score<0: 
+        return 'loss'
+    return 'draw'
 
-grid = [
- [0, 0, 0, 0, 0, 0, 0],
- [0, 0, 0, 0, 0, 0, 0],
- [0, 0, 0, 0, 0, 0, 0],
- [0, 0, 0, 0, 0, 0, 0],
- [0, 0, 0, 0, 0, 0, 0],
- [0, 0, 0, 0, 0, 0, 0]]
+def score(agent, max_lines = 1000):
+    #Scores a connect-x agent with the dataset
+    print("scoring ",agent)
+    count = 0
+    good_move_count = 0
+    perfect_move_count = 0
+    observation = structify({'mark': None, 'board': None})
+    with open("./connect4/refmoves1k_kaggle") as f:
+        for line in f:
+            
+            data = json.loads(line)
+            moves = data["move score"]
+            perfect_score = max(moves)
+            
+            observation.board = data["board"]
+            num_moves = sum(observation.board)
+            if abs(perfect_score) <= (43 - num_moves) // 2 - 6:
+                continue
+            # find out how many moves are played to set the correct mark.
+            ply = len([x for x in data["board"] if x>0])
+            if ply&1:
+                observation.mark = 2
+            else:
+                observation.mark = 1
+            
+            #call the agent
+            agent_move = agent(observation,env.configuration)
+            count += 1
+            
+            perfect_moves = [ i for i in range(7) if moves[i]==perfect_score]
 
-position, mask = Position.get_position_mask_bitmap(grid, 1)
-print(position, mask)
-solver = Solver()
-p = Position(position, mask)
-# p.play_seq("4444443")
-p.play_seq("444444326555553233322676235266611177")
-p.pretty_print()
-# position, mask = 35254972727296, 136583988658304
-# p = Position(position, mask)
-print("moves made so far", p.moves)
-# count = p.popcount(p.mask)
-# print("count", count)
-# constant = 4
-# p2 = Position(Position.mirror(p.position), Position.mirror(p.mask))
-# p2.pretty_print()
-# 
-# with cProfile.Profile() as pr:
+            if(agent_move in perfect_moves):
+                perfect_move_count += 1
+                print("Perfect!")
+            else:
+                print("Not perfect")
+                print(observation)
+
+            if win_loss_draw(moves[agent_move]) == win_loss_draw(perfect_score):
+                good_move_count += 1
+                print("Good!")
+            else:
+                print("Not Good")
+
+            if count == max_lines:
+                break
+
+        print("perfect move percentage: ",perfect_move_count/count)
+        print("good moves percentage: ",good_move_count/count)
+        print("Total analyzed", count)
+
+def test():
+    import cProfile, pstats, io
+    from pstats import SortKey
+
+    grid = [
+    [0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0]]
+
+    position, mask = Position.get_position_mask_bitmap(grid, 1)
+    print(position, mask)
+    p = Position(position, mask)
+    # p.play_seq("4444443")
+    p.play_seq("444444326555553233322676235266611177")
+    p.pretty_print()
+    # position, mask = 35254972727296, 136583988658304
+    # p = Position(position, mask)
+
+    # board = [0, 0, 2, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 2, 2, 0, 0, 0, 0, 1, 1, 1, 2, 2, 2, 0]
+    # board = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 0, 0, 0, 0, 0, 2, 2, 0, 0, 1, 0, 0, 2, 2, 0, 0, 2, 0, 1, 2, 1, 0, 0, 1, 1, 2, 1, 1]
+    # board = [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 2, 2, 2, 1, 1, 0, 0, 2, 1, 2, 2, 1, 1]
+    # board = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 0, 0, 0, 0, 0, 2, 2, 0, 0, 1, 0, 0, 2, 2, 0, 0, 2, 0, 1, 2, 1, 0, 0, 1, 1, 2, 1, 1]
+    board = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 0, 0, 0, 0, 0, 2, 2, 0, 0, 1, 0, 0, 2, 2, 0, 0, 2, 0, 1, 2, 1, 0, 0, 1, 1, 2, 1, 1]
+    grid = np.asarray(board).reshape(6, 7)
+    print(grid)
+    # print(grid)
+    position, mask = Position.get_position_mask_bitmap(grid, 1)
+    # print(position, mask)
+    p = Position(position, mask)
+    solver = Solver()
+
+
+    print("moves made so far", p.moves)
+    # count = p.popcount(p.mask)
+    # print("count", count)
+    # constant = 4
+    # p2 = Position(Position.mirror(p.position), Position.mirror(p.mask))
+    # p2.pretty_print()
+    # 
+    # with cProfile.Profile() as pr:
+    start = time.time()
+    score = solver.solve(p, False)
+    print("solved", score, "move", move_to_col(p.best_move), (time.time()-start), "seconds with", solver.node_count, "nodes explored.") #format(move, "0b"))
+    
+    score = solver.solve(p, False)
+    print("solved", score, "move", move_to_col(p.best_move), (time.time()-start), "seconds with", solver.node_count, "nodes explored.") #format(move, "0b"))
+    start = time.time()
+    scores = solver.analyze(p, False)
+    print(scores, time.time()-start, "seconds with", solver.node_count, "nodes explored.")
+    # s = io.StringIO()
+    # sortby = SortKey.CUMULATIVE  #, SortKey.PCALLS
+    # ps = pstats.Stats(pr, stream=s).sort_stats(sortby)
+    # # ps.dump_stats("./profile.stats")
+    # # pr.print_stats()
+    # ps.print_stats(50)
+    # print(s.getvalue())
+
+# Score the 2 built in agents
+from kaggle_environments import make
+env = make("connectx")
+# the built in agents are remarkably slow so only evaluating on 100 moves here
+# score(env.agents["random"],100)  
+# score(env.agents["negamax"],100)
+# score(my_agent, 100)
 start = time.time()
-score, move = solver.solve(p, False)
-print("solved", score, "move", move_to_col(move), (time.time()-start), "seconds with", solver.node_count, "nodes explored.") #format(move, "0b"))
+score(my_agent, 1000)
+print("total time", (time.time() - start), "seconds.")
 
-score, move = solver.solve(p, False)
-print("solved", score, "move", move_to_col(move), (time.time()-start), "seconds with", solver.node_count, "nodes explored.") #format(move, "0b"))
-start = time.time()
-scores = solver.analyze(p, False)
-print(scores, time.time()-start, "seconds with", solver.node_count, "nodes explored.")
-# s = io.StringIO()
-# sortby = SortKey.CUMULATIVE  #, SortKey.PCALLS
-# ps = pstats.Stats(pr, stream=s).sort_stats(sortby)
-# # ps.dump_stats("./profile.stats")
-# # pr.print_stats()
-# ps.print_stats(50)
-# print(s.getvalue())
+# test()
 
 

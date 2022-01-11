@@ -538,7 +538,7 @@ class Solver(object):
         if opening_book == None:
             print("Loading openbing book...")
             opening_book = dict()
-            with open("/kaggle_simulations/agent/opening_book.22", 'rb') as f:
+            with open("./opening_book.24", 'rb') as f:
                 opening_book_data = f.read()
                 # opening_book = pickle.load(f)
                 opening_book = decompressAndDeserialize(opening_book_data)

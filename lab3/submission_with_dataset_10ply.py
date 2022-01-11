@@ -557,7 +557,7 @@ def my_agent(obs, config):
     col = random.choice(max_cols) # Taking the center columns first
     # col = max_cols[0]
     end = time.time()
-    # print("my_agent_new move #", p.moves+1, "time", (end-start), "move", col, "score", scores[col], "at depth", N_STEPS, "pos count", solver.node_count)
+    print("my_agent_new move #", p.moves+1, "time", (end-start), "move", col, "score", scores[col], "at depth", N_STEPS, "pos count", solver.node_count)
     # print(evaluate_position.cache_info())
     
     return col
