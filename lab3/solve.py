@@ -366,7 +366,7 @@ class Solver(object):
         if opening_book == None:
             print("Loading opening book...")
             opening_book = dict()
-            with open("/Users/markyoung/Projects/mit-6.034/lab3/opening_book.24", 'rb') as f:
+            with open("./opening_book.24", 'rb') as f:
                 opening_book_data = f.read()
                 # opening_book = pickle.load(f)
                 opening_book = decompressAndDeserialize(opening_book_data)
@@ -388,11 +388,12 @@ class Solver(object):
 
         if p.moves >= 40:  # check for draw game
             # print("draw game")
-            for i in range(7):
-                move = possible & column_mask(self.column_order[i])
-                if move != 0:   # don't add none move
-                    p.best_move = move
-                    break
+            if p.best_move == None:
+                for i in range(7):
+                    move = possible & column_mask(self.column_order[i])
+                    if move != 0:   # don't add none move
+                        p.best_move = move
+                        break
             return 0
 
         # lower bound of score as opponent cannot win next move
@@ -438,10 +439,14 @@ class Solver(object):
         moves = []
         for i in range(7):
             move = possible & column_mask(self.column_order[i])
-            if move != 0:   # don't add none move
+            if move != 0 and move != p.best_move:   # don't add none move
+            # if move != 0:   # don't add none move
                 moves.append(move)
 
         moves.sort(reverse=True, key=lambda move: p.move_score(move))
+
+        if p.best_move != None:     # Add previous best_move to the front
+            moves = [p.best_move] + moves
         # This is super important!!! Initializing best_move to the first in moves.
         # It handles the cases where aggressive min/max prunning might have best_move uninitialized otherwise.
         if best_move == None:   
@@ -625,8 +630,8 @@ def score(agent, max_lines = 1000):
             
             observation.board = data["board"]
             num_moves = sum(observation.board)
-            if abs(perfect_score) <= (43 - num_moves) // 2 - 6:
-                continue
+            # if abs(perfect_score) <= (43 - num_moves) // 2 - 7:
+            #     continue
             # find out how many moves are played to set the correct mark.
             ply = len([x for x in data["board"] if x>0])
             if ply&1:
