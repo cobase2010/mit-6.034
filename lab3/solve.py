@@ -41,7 +41,7 @@ class LRUCache:
         if len(self.cache) > self.capacity:
             self.cache.popitem(last = False)
 
-transposition_table = LRUCache(1000000)
+transposition_table = LRUCache(1048576)
 # cache.put(1, (-1, 0, 7))
 # cache.put(2, (-2, 5, 5))
 # print(cache.get(1))
@@ -78,27 +78,27 @@ def ternary(n):
 # return a bitmask containg a single 1 corresponding to the top cel of a given column
 
 
-@lru_cache(maxsize=None)
+@lru_cache(maxsize=7)
 def top_mask_col(col):
     return (1 << 5) << col * 7
 
 # return a bitmask containg a single 1 corresponding to the bottom cell of a given column
 
 
-@lru_cache(maxsize=None)
+@lru_cache(maxsize=7)
 def bottom_mask_col(col):
     return 1 << col * 7
 
 # return a bitmask 1 on all the cells of a given column
 
 
-@lru_cache(maxsize=None)
+@lru_cache(maxsize=7)
 def column_mask(col):
     return ((1 << 6) - 1) << col * 7
 
 
 
-@lru_cache(maxsize=None)
+@lru_cache(maxsize=128)
 def bitboardBits(i):
     """"
     Returns the number of bits in a bitboard (7x6).
@@ -117,7 +117,7 @@ def bitboardBits(i):
     return i
 
 
-@lru_cache(maxsize=None)
+@lru_cache(maxsize=1048576)
 def compute_winning_position(position, mask):
     HEIGHT = 6
     # vertical
@@ -541,7 +541,7 @@ def my_agent(obs, config):
     
     
     # with cProfile.Profile() as pr:
-    weak = False
+    weak = True
 
     start = time.time()
     grid = np.asarray(obs.board).reshape(config.rows, config.columns)
@@ -630,7 +630,7 @@ def score(agent, max_lines = 1000):
             
             observation.board = data["board"]
             num_moves = sum(observation.board)
-            # if abs(perfect_score) <= (43 - num_moves) // 2 - 7:
+            # if abs(perfect_score) <= (43 - num_moves) // 2 - 10:
             #     continue
             # find out how many moves are played to set the correct mark.
             ply = len([x for x in data["board"] if x>0])
