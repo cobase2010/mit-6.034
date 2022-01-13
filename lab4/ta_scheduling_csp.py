@@ -67,6 +67,9 @@ if __name__ == "__main__":
     elif checker_type == "fcps":
         import lab4
         checker = lab4.forward_checking_prop_singleton
+    elif checker_type == "fcrd":
+        import lab4
+        checker = lab4.forward_checking_with_prop_thru_reduced_domains
     else:
         import lab4
         checker = lab4.forward_checking_prop_singleton

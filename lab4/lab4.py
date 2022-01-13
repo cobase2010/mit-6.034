@@ -7,6 +7,20 @@ import math
 from csp import BinaryConstraint, CSP, CSPState, Variable,\
     basic_constraint_checker, solve_csp_problem
 
+def check_and_reduce(state, X, x):
+    neighbor_constraints = state.get_constraints_by_name(X.get_name())
+    for constraint in neighbor_constraints:
+        Y = state.get_variable_by_name(constraint.get_variable_j_name())
+        if Y.is_assigned():
+            continue
+        # y_domain = Y.copy()
+        for y in Y.get_domain():
+            if not constraint.check(state, x, y):
+                Y.reduce_domain(y)
+            if Y.domain_size() == 0:
+                return False
+    return True
+
 # Implement basic forward checking on the CSPState see csp.py
 def forward_checking(state, verbose=False):
     # Before running Forward checking we must ensure
@@ -16,8 +30,13 @@ def forward_checking(state, verbose=False):
         return False
 
     # Add your forward checking logic here.
-    
-    raise NotImplementedError
+    X = state.get_current_variable()
+    x = None
+    if X is not None:  # We are not in the root state
+        x = X.get_assigned_value()
+        return check_and_reduce(state, X, x)
+    else:
+        return True
 
 # Now Implement forward checking + (constraint) propagation through
 # singleton domains.
@@ -28,7 +47,67 @@ def forward_checking_prop_singleton(state, verbose=False):
         return False
 
     # Add your propagate singleton logic here.
-    raise NotImplementedError
+    singleton_vars = [var for var in state.get_all_variables() if not var.is_assigned() and var.domain_size() == 1]
+    visisted_singletons = []
+    while len(singleton_vars) > 0:
+        X = singleton_vars.pop()  # FIFO
+        visisted_singletons.append(X)
+        if not check_and_reduce(state, X, X.get_domain()[0]):
+            return False
+        new_singletons = [var for var in state.get_all_variables() if not var.is_assigned() and var not in visisted_singletons 
+                    and var not in singleton_vars and var.domain_size() ==1]
+        singleton_vars = new_singletons + singleton_vars
+    return True
+
+# BONUS: Now Implement forward checking with prop thru reduced domains
+def forward_checking_with_prop_thru_reduced_domains(state, verbose=False):
+    return arc_consistency(state)
+
+def arc_consistency(state):
+    queue = []
+    all_constraints = state.get_all_constraints()
+    for constraint in all_constraints:
+        X = state.get_variable_by_name(constraint.get_variable_i_name())
+        Y = state.get_variable_by_name(constraint.get_variable_j_name())
+        if (X, Y) not in queue:
+            queue.append((X, Y))
+        # queue.append((Y, X))
+    while len(queue) > 0:
+        X, Y = queue.pop(0)
+        if remove_inconsistent_values(state, all_constraints, X, Y):
+            if X.domain_size() == 0:
+                return False        # No solution found!
+            neighbor_constraints = state.get_constraints_by_name(X.get_name(), order=2)
+            for constraint in neighbor_constraints:
+                Y2 = state.get_variable_by_name(constraint.get_variable_i_name())
+                if Y2.get_name() != Y.get_name() and not Y2.is_assigned() and (Y2, X) not in queue:
+                    queue = queue + [(Y2, X)] 
+
+    return True
+
+
+
+def remove_inconsistent_values(state, all_constraints, X, Y):
+    reduced = False
+    # domain_copy = [var for var in X.get_domain()]
+    constraints = [var for var in all_constraints if var.get_variable_i_name() == X.get_name() \
+                    and var.get_variable_j_name() == Y.get_name()]
+    for x in X.get_domain():
+        satisfy = False
+        for y in Y.get_domain():
+            for constraint in constraints:
+                if constraint.check(state, x, y):
+                    satisfy = True
+                    break
+            if satisfy:
+                break
+        if not satisfy:
+            X.reduce_domain(x)
+            reduced = True
+    return reduced
+
+        
+
 
 ## The code here are for the tester
 ## Do not change.

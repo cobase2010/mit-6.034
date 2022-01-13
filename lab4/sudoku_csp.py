@@ -129,11 +129,27 @@ if __name__ == "__main__":
     elif checker_type == "fcps":
         import lab4
         checker = lab4.forward_checking_prop_singleton
+    elif checker_type == "fcrd":
+        import lab4
+        checker = lab4.forward_checking_with_prop_thru_reduced_domains
     else:
         import lab4
         checker = lab4.forward_checking_prop_singleton
 
+    import cProfile, pstats, io
+    # from pstats import SortKey
+    
+    
+    pr = cProfile.Profile()
+    pr.enable()
+    sol = solve_csp_problem(sudoku_csp_problem, checker, verbose=False)
 
-    sol = solve_csp_problem(sudoku_csp_problem, checker, verbose=True)
     for row in make_solution_readable(sol):
         print row
+    pr.disable()
+    # s = io.StringIO()
+    sortby = 'cumulative'
+    ps = pstats.Stats(pr).sort_stats(sortby)
+    ps.print_stats()
+    # print(s.getvalue())
+    

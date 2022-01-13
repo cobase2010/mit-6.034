@@ -149,7 +149,7 @@ class CSPState:
                              self.variable_index)
         return new_state
 
-    def get_constraints_by_name(self, variable_name):
+    def get_constraints_by_name(self, variable_name, order=1):
         """
         List only constraints associated with variable_name
         (where variable_name is variable_i in the constraint)
@@ -157,9 +157,14 @@ class CSPState:
         constraints = []
         for key, val in self.constraint_map.items():
             v_i, v_j = key
-            if v_i == variable_name:
-                constraints += val
+            if order == 1:
+                if v_i == variable_name:
+                    constraints += val
+            elif order == 2:
+                if v_j == variable_name:
+                    constraints += val
         return constraints
+
     
     def get_all_constraints(self):
         """
@@ -476,7 +481,10 @@ def solve_csp_problem(problem, checker, verbose=False):
         
 if __name__ == "__main__":
     checker = basic_constraint_checker
-    #import lab4 
-    #fc_checker = lab4.forward_checking    
-    #fcps_checker = lab4.forward_checking_prop_singleton
-    solve_csp_problem(simple_csp_problem, checker, verbose=True)
+    import lab4 
+    fc_checker = lab4.forward_checking    
+    fcps_checker = lab4.forward_checking_prop_singleton
+    fcrd_checker = lab4.forward_checking_with_prop_thru_reduced_domains
+    # solve_csp_problem(simple_csp_problem, checker, verbose=True)
+    # solve_csp_problem(simple_csp_problem, fc_checker, verbose=True)
+    solve_csp_problem(simple_csp_problem, fcrd_checker, verbose=True)
