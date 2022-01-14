@@ -200,14 +200,14 @@ make_test(type = 'FUNCTION',
 
 ## This test was rejected on grounds that it's not actually deterministic
 ## Feel free to run it, by un-commenting this block, if you're curious.
-#def eval_test_2_getargs():
+# def eval_test_2_getargs():
 #    senate_group1, senate_group2 = crosscheck_groups(senate_people)
 #    return [ ['my_classifier'] + list(random_split_groups(senate_people)) for x in xrange(20) ]
-#
-#def eval_test_2_testanswer(val, original_val = None):
+
+# def eval_test_2_testanswer(val, original_val = None):
 #    return ( val <= 5 )
-#
-#make_test(type = 'MULTIFUNCTION',
+
+# make_test(type = 'MULTIFUNCTION',
 #          getargs = eval_test_2_getargs,
 #          testanswer = eval_test_2_testanswer,
 #          expected_val = "Less than or equal to 3 miscategorizations",

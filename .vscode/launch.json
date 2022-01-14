@@ -23,7 +23,7 @@
             "program": "${file}",
             "console": "integratedTerminal",
             "cwd": "${fileDirname}",
-            "args": ["fcrd"]
+            // "args": ["fcrd"]
         }
     ]
 }

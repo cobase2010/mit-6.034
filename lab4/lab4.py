@@ -139,7 +139,7 @@ last_senate_votes = read_vote_data('S109desc.csv')
 ### Part 1: Nearest Neighbors
 ## An example of evaluating a nearest-neighbors classifier.
 senate_group1, senate_group2 = crosscheck_groups(senate_people)
-#evaluate(nearest_neighbors(hamming_distance, 1), senate_group1, senate_group2, verbose=1)
+# evaluate(nearest_neighbors(hamming_distance, 1), senate_group1, senate_group2, verbose=1)
 
 ## Write the euclidean_distance function.
 ## This function should take two lists of integers and
@@ -148,30 +148,59 @@ senate_group1, senate_group2 = crosscheck_groups(senate_people)
 ## computes Hamming distances.
 
 def euclidean_distance(list1, list2):
-    # this is not the right solution!
-    return hamming_distance(list1, list2)
+
+    """ Calculate the Euclidean distance between two lists """
+    # Make sure we're working with lists
+    # Sorry, no other iterables are permitted
+    assert isinstance(list1, list)
+    assert isinstance(list2, list)
+
+    dist = 0
+
+    # 'zip' is a Python builtin, documented at
+    # <http://www.python.org/doc/lib/built-in-funcs.html>
+    for item1, item2 in zip(list1, list2):
+       dist += (item1 - item2) ** 2
+    return dist ** 0.5
+    
 
 #Once you have implemented euclidean_distance, you can check the results:
-#evaluate(nearest_neighbors(euclidean_distance, 1), senate_group1, senate_group2)
+# evaluate(nearest_neighbors(euclidean_distance, 1), senate_group1, senate_group2, verbose=1)
 
 ## By changing the parameters you used, you can get a classifier factory that
 ## deals better with independents. Make a classifier that makes at most 3
 ## errors on the Senate.
 
-my_classifier = nearest_neighbors(hamming_distance, 1)
-#evaluate(my_classifier, senate_group1, senate_group2, verbose=1)
+my_classifier = nearest_neighbors(euclidean_distance, 5)
+# evaluate(my_classifier, senate_group1, senate_group2, verbose=1)
 
 ### Part 2: ID Trees
-#print CongressIDTree(senate_people, senate_votes, homogeneous_disorder)
+# print CongressIDTree(senate_people, senate_votes, homogeneous_disorder)
 
 ## Now write an information_disorder function to replace homogeneous_disorder,
 ## which should lead to simpler trees.
 
 def information_disorder(yes, no):
-    return homogeneous_disorder(yes, no)
+    
+    n_y = len(yes)
+    n_n = len(no)
+    n_t = n_y + n_n
+    y_score = 0.0
+    n_score = 0.0
 
-#print CongressIDTree(senate_people, senate_votes, information_disorder)
-#evaluate(idtree_maker(senate_votes, homogeneous_disorder), senate_group1, senate_group2)
+    for member in set(yes):
+        member_count = yes.count(member)
+        y_score += -(member_count * 1.0/n_y) * math.log(member_count * 1.0/n_y, 2)
+    
+    for member in set(no):
+        member_count = no.count(member)
+        n_score += -(member_count * 1.0/n_n) * math.log(member_count * 1.0/n_n, 2)
+    
+    return n_y * 1.0 / n_t * y_score + n_n * 1.0/n_t * n_score
+
+
+# print CongressIDTree(senate_people, senate_votes, information_disorder)
+# evaluate(idtree_maker(senate_votes, homogeneous_disorder), senate_group1, senate_group2, verbose=2)
 
 ## Now try it on the House of Representatives. However, do it over a data set
 ## that only includes the most recent n votes, to show that it is possible to
@@ -198,22 +227,22 @@ def limited_house_classifier(house_people, house_votes, n, verbose = False):
                                    
 ## Find a value of n that classifies at least 430 representatives correctly.
 ## Hint: It's not 10.
-N_1 = 10
-rep_classified = limited_house_classifier(house_people, house_votes, N_1)
+N_1 = 44
+rep_classified = limited_house_classifier(house_people, house_votes, N_1, verbose=False)
 
 ## Find a value of n that classifies at least 90 senators correctly.
-N_2 = 10
+N_2 = 67
 senator_classified = limited_house_classifier(senate_people, senate_votes, N_2)
 
 ## Now, find a value of n that classifies at least 95 of last year's senators correctly.
-N_3 = 10
+N_3 = 23
 old_senator_classified = limited_house_classifier(last_senate_people, last_senate_votes, N_3)
 
 
 ## The standard survey questions.
-HOW_MANY_HOURS_THIS_PSET_TOOK = ""
-WHAT_I_FOUND_INTERESTING = ""
-WHAT_I_FOUND_BORING = ""
+HOW_MANY_HOURS_THIS_PSET_TOOK = "10"
+WHAT_I_FOUND_INTERESTING = "All of them"
+WHAT_I_FOUND_BORING = "None"
 
 
 ## This function is used by the tester, please don't modify it!
