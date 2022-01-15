@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding: iso-8859-15 -*-
 # 6.034 Lab 5
 # Neural Net
 # - In this file we have an incomplete skeleton of
@@ -60,7 +61,7 @@ class Input(ValuedElement,DifferentiableElement):
         
         returns: number (float or int)
         """
-        raise NotImplementedError, "Implement me!"
+        return self.get_value()
 
     def dOutdX(self, elem):
         """
@@ -71,7 +72,7 @@ class Input(ValuedElement,DifferentiableElement):
 
         returns: number (float or int)
         """
-        raise NotImplementedError, "Implement me!"
+        return 0
 
 class Weight(ValuedElement):
     """
@@ -170,7 +171,16 @@ class Neuron(DifferentiableElement):
 
         returns: number (float or int)
         """
-        raise NotImplementedError, "Implement me!"
+        out = 0
+
+        inputs = self.get_inputs()
+        weights = self.get_weights()
+
+        # x_0 * w_0 + x_1 * w_1 + ... + x_n * w_n
+        for i in xrange(len(inputs)):
+            out += inputs[i].output() * weights[i].get_value()
+
+        return ( 1.0 / (1.0 + math.exp(-out)) )
 
     def dOutdX(self, elem):
         # Implement compute_doutdx instead!!
@@ -190,7 +200,28 @@ class Neuron(DifferentiableElement):
 
         returns: number (float/int)
         """
-        raise NotImplementedError, "Implement me!"
+        # 1. The termination case where the weight being differentiated over is one of the (direct) weights of
+        #     the current neuron.
+        # 2. The recursive case where the weight is not one that is directly connected (but is a descendant
+        #     weight). 
+        out = self.output()
+        octerm = out * (1 - out)
+
+        if self.has_weight(elem):
+            # dP_r(w)/dw = d(w*o_l)/dw = o_l
+            index = self.my_weights.index(elem)
+            oa = self.get_inputs()[index].output()
+            d = octerm*oa
+        else:
+            # δli =oli(1 − oli) × Sigma(wli→rj × δrj)
+            d = 0
+            for i in xrange(len(self.get_weights())):
+                cur_w = self.my_weights[i]
+                if self.isa_descendant_weight_of(elem, cur_w):
+                    input_deriv = self.get_inputs()[i].dOutdX(elem)
+                    d += cur_w.get_value() * input_deriv
+            d *= octerm
+        return d
 
     def get_weights(self):
         return self.my_weights
@@ -225,7 +256,8 @@ class PerformanceElem(DifferentiableElement):
         
         returns: number (float/int)
         """
-        raise NotImplementedError, "Implement me!"
+        # P(o) = -0.5 (d - o)^2
+        return -0.5 * (self.my_desired_val - self.my_input.output()) ** 2
 
     def dOutdX(self, elem):
         """
@@ -236,7 +268,10 @@ class PerformanceElem(DifferentiableElement):
 
         returns: number (int/float)
         """
-        raise NotImplementedError, "Implement me!"
+        # dP/d(w) = dP/do * do/dw 
+        #         = (d - o) * o.dOutDx(w)
+        return (self.my_desired_val - self.my_input.output()) * self.my_input.dOutdX(elem)
+        
 
     def set_desired(self,new_desired):
         self.my_desired_val = new_desired
@@ -280,11 +315,14 @@ def random_weight():
     """Generate a deterministic random weight"""
     # We found that random.randrange(-1,2) to work well emperically 
     # even though it produces randomly 3 integer values -1, 0, and 1.
-    return random.randrange(-1, 2)
+    # return random.randrange(-1, 2)
 
     # Uncomment the following if you want to try a uniform distribuiton 
     # of random numbers compare and see what the difference is.
-    # return random.uniform(-1, 1)
+
+    # For my tests, I found using uniform distribution improves the performance, whereas
+    # using 3 integer values couldn't achieve 100% accuracy for the last data set (inverse-diagonal-band)
+    return random.uniform(-1, 1)
 
 def make_neural_net_basic():
     """
@@ -335,7 +373,38 @@ def make_neural_net_two_layer():
     See 'make_neural_net_basic' for required naming convention for inputs,
     weights, and neurons.
     """
-    raise NotImplementedError, "Implement me!"
+
+    seed_random()
+    i0 = Input('i0', -1.0) # this input is immutable
+    i1 = Input('i1', 0.0)
+    i2 = Input('i2', 0.0)
+
+    w1A = Weight('w1A', random_weight())
+    w2A = Weight('w2A', random_weight())
+    wA  = Weight('wA', random_weight())
+
+    w1B = Weight('w1B', random_weight())
+    w2B = Weight('w2B', random_weight())
+    wB  = Weight('wB', random_weight())
+
+    wAC = Weight('wAC', random_weight())
+    wBC = Weight('wBC', random_weight())
+
+    wC = Weight('wC', random_weight())
+
+    # Inputs must be in the same order as their associated weights
+    A = Neuron('A', [i0, i1, i2], [wA, w1A, w2A])
+    B = Neuron('B', [i0, i1, i2], [wB, w1B, w2B])
+
+    C = Neuron('C', [i0, A, B], [wC, wAC, wBC])
+
+
+
+    P = PerformanceElem(C, 0.0)
+
+    net = Network(P,[A, B, C])
+    return net
+
 
 def make_neural_net_challenging():
     """
@@ -346,8 +415,47 @@ def make_neural_net_challenging():
     See 'make_neural_net_basic' for required naming convention for inputs,
     weights, and neurons.
     """
+    seed_random()
 
-    raise NotImplementedError, "Implement me!"
+    i0 = Input('i0', -1.0) # this input is immutable
+    i1 = Input('i1', 0.0)
+    i2 = Input('i2', 0.0)
+
+    w1A = Weight('w1A', random_weight())
+    w2A = Weight('w2A', random_weight())
+    wA  = Weight('wA', random_weight())
+
+    w1B = Weight('w1B', random_weight())
+    w2B = Weight('w2B', random_weight())
+    wB  = Weight('wB', random_weight())
+
+    wAC = Weight('wAC', random_weight())
+    wBC = Weight('wBC', random_weight())
+    wC = Weight('wC', random_weight())
+
+    wAD = Weight('wAD', random_weight())
+    wBD = Weight('wBD', random_weight())
+    wD = Weight('wD', random_weight())
+
+    wCE = Weight('wCE', random_weight())
+    wDE = Weight('wDE', random_weight())
+
+    wE = Weight('wE', random_weight())
+
+
+    # Inputs must be in the same order as their associated weights
+    A = Neuron('A', [i0, i1, i2], [wA, w1A, w2A])
+    B = Neuron('B', [i0, i1, i2], [wB, w1B, w2B])
+
+    C = Neuron('C', [i0, A, B], [wC, wAC, wBC])
+    D = Neuron('D', [i0, A, B], [wD, wAD, wBD])
+
+    E = Neuron('E', [i0, C, D], [wE, wCE, wDE])
+
+    P = PerformanceElem(E, 0.0)
+
+    net = Network(P,[A, B, C, D, E])
+    return net
 
 def make_neural_net_with_weights():
     """
