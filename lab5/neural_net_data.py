@@ -330,6 +330,7 @@ challenging_data_sets = [("moat", moat_data, moat_test_data),
                          ]
 
 manual_weight_data_sets = [("patchy", patch_data, patch_test_data)]
+                           
 
 
 all_data_sets = simple_data_sets + harder_data_sets + challenging_data_sets + \

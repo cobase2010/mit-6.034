@@ -272,6 +272,17 @@ class PerformanceElem(DifferentiableElement):
         #         = (d - o) * o.dOutDx(w)
         return (self.my_desired_val - self.my_input.output()) * self.my_input.dOutdX(elem)
         
+        # val = (self.my_desired_val - self.my_input.output()) * self.my_input.dOutdX(elem)
+        # print("val", val)
+
+        # Not sure why this shouldn't be o (1-o)(d-o) according to formula
+        # o = self.output()
+        # calc = (self.my_desired_val - o) * (1-o) * o
+
+        # if abs(val - calc) > 0.01:
+        #     print("val", val, "calc", calc)
+        # return val
+        
 
     def set_desired(self,new_desired):
         self.my_desired_val = new_desired
@@ -354,7 +365,7 @@ def make_neural_net_basic():
     i2 = Input('i2', 0.0)
 
     w1A = Weight('w1A', 1)
-    w2A = Weight('w2A', 1)
+    w2A = Weight('w2A', 0)
     wA  = Weight('wA', 1)
 
     # Inputs must be in the same order as their associated weights
@@ -415,47 +426,46 @@ def make_neural_net_challenging():
     See 'make_neural_net_basic' for required naming convention for inputs,
     weights, and neurons.
     """
+
+    # 4 neurons on the first layer and 1 on the second layer (4, 1) seems to do the trick to solve all three without issues.
+    # 2, 2, 1 or other configurations didn't seem to work
+
     seed_random()
 
-    i0 = Input('i0', -1.0) # this input is immutable
+    i0 = Input('i0',-1.0)
     i1 = Input('i1', 0.0)
     i2 = Input('i2', 0.0)
 
     w1A = Weight('w1A', random_weight())
     w2A = Weight('w2A', random_weight())
-    wA  = Weight('wA', random_weight())
-
     w1B = Weight('w1B', random_weight())
     w2B = Weight('w2B', random_weight())
-    wB  = Weight('wB', random_weight())
-
-    wAC = Weight('wAC', random_weight())
-    wBC = Weight('wBC', random_weight())
-    wC = Weight('wC', random_weight())
-
-    wAD = Weight('wAD', random_weight())
-    wBD = Weight('wBD', random_weight())
-    wD = Weight('wD', random_weight())
-
+    w1C = Weight('w1C', random_weight())
+    w2C = Weight('w2C', random_weight())
+    w1D = Weight('w1D', random_weight())
+    w2D = Weight('w2D', random_weight())
+    wAE = Weight('wAE', random_weight())
+    wBE = Weight('wBE', random_weight())
     wCE = Weight('wCE', random_weight())
     wDE = Weight('wDE', random_weight())
 
+    wA = Weight('wA', random_weight())
+    wB = Weight('wB', random_weight())
+    wC = Weight('wC', random_weight())
+    wD = Weight('wD', random_weight())
     wE = Weight('wE', random_weight())
 
-
-    # Inputs must be in the same order as their associated weights
-    A = Neuron('A', [i0, i1, i2], [wA, w1A, w2A])
-    B = Neuron('B', [i0, i1, i2], [wB, w1B, w2B])
-
-    C = Neuron('C', [i0, A, B], [wC, wAC, wBC])
-    D = Neuron('D', [i0, A, B], [wD, wAD, wBD])
-
-    E = Neuron('E', [i0, C, D], [wE, wCE, wDE])
+    A = Neuron('A', [i1, i2, i0], [w1A, w2A, wA])
+    B = Neuron('B', [i1, i2, i0], [w1B, w2B, wB])
+    C = Neuron('C', [i1, i2, i0], [w1C, w2C, wC])
+    D = Neuron('D', [i1, i2, i0], [w1D, w2D, wD])
+    E = Neuron('E', [A, B, C, D, i0], [wAE, wBE, wCE, wDE, wE])
 
     P = PerformanceElem(E, 0.0)
 
-    net = Network(P,[A, B, C, D, E])
+    net = Network(P, [A, B, C, D, E])
     return net
+
 
 def make_neural_net_with_weights():
     """
@@ -468,13 +478,25 @@ def make_neural_net_with_weights():
     # You can preset weights for the network by completing
     # and uncommenting the init_weights dictionary below.
     #
-    # init_weights = { 'w1A' : 0.0,
-    #                  'w2A' : 0.0,
-    #                  'w1B' : 0.0,
-    #                  'w2B' : 0.0,
-    #                  .... # finish me!
-    #
-    raise NotImplementedError, "Implement me!"
+    init_weights = {
+                    'wA': -1.743272,
+                    'w1A': -2.884608,
+                    'w2A': 4.331573,
+                    'wB': -1.604030,
+                    'w1B': -1.582600,
+                    'w2B': -1.408227,
+                    'wC': -4.086101,
+                    'w1C': -2.472857,
+                    'w2C': -2.343619,
+                    'wD': 1.316075,
+                    'w1D': -4.033977,
+                    'w2D': 2.552399,
+                    'wE': 4.487942,
+                    'wAE': 8.773706,
+                    'wBE': 2.975140,
+                    'wCE': 6.366508,
+                    'wDE': -9.074769
+    }
     return make_net_with_init_weights_from_dict(make_neural_net_challenging,
                                                 init_weights)
 
@@ -532,6 +554,8 @@ def train(network,
             # set the new weights
             for w in network.weights:
                 w.update()
+                # print(w.get_name(), w.get_value())
+            
 
             # save the performance value
             performances.append(network.performance.output())
