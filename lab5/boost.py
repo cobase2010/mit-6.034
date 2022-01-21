@@ -275,11 +275,11 @@ class BoostClassifier(Classifier):
 
         returns: Nothing (only updates self.data_weights)
         """
-        for weight, datum in zip(self.data_weights, self.data):
+        for i, (weight, datum) in enumerate(zip(self.data_weights, self.data)):
             if best_classifier.classify(datum) == self.standard.classify(datum):
-                weight *= 0.5 * (1 / (1 - best_error))
+                self.data_weights[i] = 0.5 * (1 / (1 - best_error)) * weight
             else:
-                weight *= 0.5 * 1 / best_error
+                self.data_weights[i] = (0.5 * 1 / best_error) * weight
 
     def __str__(self):
         classifier_part = '\n'.join(["%4.4f: %s" % (weight, c) for c, weight in

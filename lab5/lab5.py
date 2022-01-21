@@ -38,7 +38,7 @@ boost_1796 = BoostClassifier(make_vote_classifiers(house_1796_votes),
                             
 
 # You will need to train it, however. You can change the number of steps here.
-boost_1796.train(100)
+boost_1796.train(20)
 
 # Once you have run your boosting classifier for a sufficient number of steps
 # on the 4th House of Representatives data, it should tell you how it believes
@@ -59,7 +59,7 @@ for classifier, weight in boost_1796.classifiers:
 
 
 
-republican_newspaper_vote = 'answer yes or no'
+republican_newspaper_vote = 'no'
 
 # In the 4th House of Representatives, which five representatives were
 # misclassified the most while training your boost classifier?
@@ -84,7 +84,12 @@ def most_misclassified(classifier, n=5):
 	returns: list of data points (each passed through legislator_info) that were
 			 misclassified most often
     """
-    raise NotImplementedError
+    res = []
+    data_copy = sorted(classifier.data, reverse=True, key=lambda x: classifier.data_weights[classifier.data.index(x)])
+    for i in range(n):
+        res.append(legislator_info(data_copy[i]))
+
+    return res
 
 # The following line is used by the tester; please leave it in place!
 most_misclassified_boost_1796 = lambda n: most_misclassified(boost_1796, n)
@@ -98,7 +103,18 @@ most_misclassified_boost_1796 = lambda n: most_misclassified(boost_1796, n)
 boost = BoostClassifier(make_vote_classifiers(senate_votes), senate_people,
   standardPartyClassifier)
 boost.train(20)
-republican_sunset_vote = 'answer yes or no'
+
+sunset_classifier = None
+for base_classifier in boost.base_classifiers:
+    if "3930" in base_classifier.votelist[base_classifier.index]["name"].lower():
+        sunset_classifier = base_classifier
+        break
+
+for classifier, weight in boost.classifiers:
+    if classifier == sunset_classifier:
+        print("Weight sunset is", weight)
+        break
+republican_sunset_vote = 'no'
 
 # Which five Senators are the most misclassified after training your
 # classifier? (Again, the tester will test the function, not the answer you
