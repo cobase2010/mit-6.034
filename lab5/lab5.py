@@ -35,14 +35,29 @@ house_1796_votes = read_vote_data('H004desc.csv')
 boost_1796 = BoostClassifier(make_vote_classifiers(house_1796_votes),
                              house_1796, standardPartyClassifier)
 
+                            
+
 # You will need to train it, however. You can change the number of steps here.
-boost_1796.train(20)
+boost_1796.train(100)
 
 # Once you have run your boosting classifier for a sufficient number of steps
 # on the 4th House of Representatives data, it should tell you how it believes
 # Republicans and Federalists generally voted on a range of issues. Which way
 # does it predict a Republican would vote on the amendment to require
 # "newspapers to be sufficiently dried before mailing"? ('yes' or 'no')
+
+newspaper_classifier = None
+for base_classifier in boost_1796.base_classifiers:
+    if "newspaper" in base_classifier.votelist[base_classifier.index]["name"].lower():
+        newspaper_classifier = base_classifier
+        break
+
+for classifier, weight in boost_1796.classifiers:
+    if classifier == newspaper_classifier:
+        print("Weight is", weight)
+        break
+
+
 
 republican_newspaper_vote = 'answer yes or no'
 

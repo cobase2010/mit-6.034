@@ -23,7 +23,7 @@
             "program": "${file}",
             "console": "integratedTerminal",
             "cwd": "${fileDirname}",
-            "args": ["two_layer"]
+            // "args": ["two_layer"]
         }
     ]
 }
