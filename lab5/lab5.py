@@ -7,6 +7,7 @@ from data_reader import *
 from boost import *
 from orange_for_6034 import *
 from neural_net_data import *
+import Orange
 import neural_net
 
 SVM_TYPE = orange.SVMLearner.C_SVC
@@ -216,6 +217,13 @@ learners = {
     "svms": orange.SVMLearner(kernel_type = orange.SVMLearner.Sigmoid,
                               probability = True, svm_type=SVM_TYPE),
     "nb": orange.BayesLearner(),
+    # "nn": Orange.classification.neural.NeuralNetworkLearner(),
+    # "nn": orangeSNNS.SNNSLearner(name = 'SNNS neural network',
+    #                                  hiddenLayers = [128,128],
+    #                                  MSE = 0,
+    #                                  cycles = 500,
+    #                                  algorithm = "Std_Backpropagation",
+    #                                  learningParams = ["0.2"]),
 
     #"boost":orngEnsemble.BoostedLearner(orngTree.TreeLearner()),
     # http://www.ailab.si/orange/doc/modules/orngEnsemble.htm
@@ -231,6 +239,8 @@ learners["svmp3"].name = "Support Vector Machine classifier with degree 3 polyno
 learners["svmr"].name = "Support Vector Machine classifier with radial basis kernel"
 learners["svms"].name = "Support Vector Machine classifier with sigmoid kernel"
 learners["nb"].name = "Naive Bayes classifier"
+# learners["nn"].name = "Neural network"
+
 #FIXME: learners["034b"].name = "Our boosting classifier for party id datasets"
 #learners["boost"].name = "Boosted decision trees classifier"
 
@@ -323,7 +333,7 @@ if __name__ == "__main__":
     # dataset = "H004"
     dataset = "breast-cancer"
     
-    describe_and_classify(dataset, learners)
+    # describe_and_classify(dataset, learners)
     print "Boosting with our suite of orange classifiers:"
     print ("  accuracy: %.3f, brier: %.3f, auc: %.3f" %
            boosted_ensemble(dataset, learners, DATASET_STANDARDS[dataset]))
