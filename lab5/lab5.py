@@ -38,7 +38,7 @@ boost_1796 = BoostClassifier(make_vote_classifiers(house_1796_votes),
                             
 
 # You will need to train it, however. You can change the number of steps here.
-boost_1796.train(20)
+boost_1796.train(20, False)
 
 # Once you have run your boosting classifier for a sufficient number of steps
 # on the 4th House of Representatives data, it should tell you how it believes
@@ -59,7 +59,7 @@ for classifier, weight in boost_1796.classifiers:
 
 
 
-republican_newspaper_vote = 'no'
+republican_newspaper_vote = 'no' if weight < 0 else 'yes'
 
 # In the 4th House of Representatives, which five representatives were
 # misclassified the most while training your boost classifier?
@@ -102,7 +102,7 @@ most_misclassified_boost_1796 = lambda n: most_misclassified(boost_1796, n)
 
 boost = BoostClassifier(make_vote_classifiers(senate_votes), senate_people,
   standardPartyClassifier)
-boost.train(20)
+boost.train(20, False)
 
 sunset_classifier = None
 for base_classifier in boost.base_classifiers:
@@ -235,39 +235,42 @@ learners["nb"].name = "Naive Bayes classifier"
 #learners["boost"].name = "Boosted decision trees classifier"
 
 
-if __name__ == "__main__":
-    describe_and_classify("vampires", learners)
+# if __name__ == "__main__":
+#     describe_and_classify("vampires", learners)
 
 
 # For the vampire dataset, what variable does the id tree query, that our
 # algorithm in class did not?
-vampires_idtree_odd = "one of: shadow garlic complexion accent"
+vampires_idtree_odd = "accent"
 
 # For the vampire dataset, which classifier does the worst when tested on just
 # the data on which it was trained?
-vampires_worst_on_training = 'one of: maj dt knn svml svmp3 svmr svms nb'
+# vampires_worst_on_training = 'one of: maj dt knn svml svmp3 svmr svms nb'
+vampires_worst_on_training = 'svmr'
 # Is it actually doing badly, or is it just confused?
 
 # For the vampire dataset, which classifier does the worst when cross-validated?
-vampires_worst_on_test = 'one of: maj dt knn svml svmp3 svmr svms nb'
+# vampires_worst_on_test = 'one of: maj dt knn svml svmp3 svmr svms nb'
+vampires_worst_on_test = 'svms'
 
 
 # Which of the above classifiers has the best Brier distance to the true answers
 # in ten-fold cross-validation for the H004 dataset?
 
-best_brier_for_h004 = 'one of: maj dt knn svml svmp3 svmr svms nb'
+# best_brier_for_h004 = 'one of: maj dt knn svml svmp3 svmr svms nb'
+best_brier_for_h004 = 'svmp3'
 
 # Just looking at the confusion matrices, what is the minimum number
 # of data points that must have been differently classified between
 # the best classifier and the second-best classifier for the H004 data
 # set?
 
-min_disagreement_h004 = None
+min_disagreement_h004 = 2
 
 # Which bill was the most divisive along party lines in the H004 data
 # set, according to the classification tree (id tree)?
 
-most_divisive_h004 = 'a bill number'
+most_divisive_h004 = '2'
 
 
 
@@ -306,21 +309,51 @@ DATASET_STANDARDS={
     "adult" : OrangeStandardClassifier(">50K") # this is big -- optional!
     }
 
-if __name__ == "__main__":
-    dataset = "H004"
+classifiers_for_best_ensemble2 = ['maj', 'dt', 'knn', 'svml', 'svmp3', 'svmr', 'svms', 'nb']
 
+# function to generate all the sub lists without empty list
+def sub_lists (l):
+    lists = []
+    for i in range(len(l) + 1):
+        for j in range(i):
+            lists.append(l[j: i])
+    return lists
+
+if __name__ == "__main__":
+    # dataset = "H004"
+    dataset = "breast-cancer"
+    
     describe_and_classify(dataset, learners)
     print "Boosting with our suite of orange classifiers:"
     print ("  accuracy: %.3f, brier: %.3f, auc: %.3f" %
            boosted_ensemble(dataset, learners, DATASET_STANDARDS[dataset]))
+    # best_accuracy = 0
+    # best_classifiers = []
+    # for sublist in sub_lists(classifiers_for_best_ensemble2):
+    #     print("Testing subset", sublist)
+    #     subset = {}
+    #     for shortname in sublist:
+    #         subset[shortname] = learners[shortname]
+    #     accuracy, brier, auc = \
+    #         boosted_ensemble("breast-cancer", subset,
+    #                         DATASET_STANDARDS["breast-cancer"])
+    #     if accuracy > best_accuracy:
+    #         best_accuracy = accuracy
+    #         best_classifiers = sublist
+    #     print "Boosting with subset of orange classifiers:"
+    #     print ("  accuracy: %.3f, brier: %.3f, auc: %.3f" % (accuracy, brier, auc))
+    
+    # print("Best classifiers", best_classifiers, "with accuracy", best_accuracy)
 
 
 # Play with the datasets mentioned above.  What ensemble of classifiers
 # will give you the best cross-validation accuracy on the breast-cancer
 # dataset?
 
-classifiers_for_best_ensemble = ['maj', 'dt', 'knn', 'svml',
-                                 'svmp3', 'svmr', 'svms', 'nb']
+
+
+classifiers_for_best_ensemble = ['svml', 'svmp3', 'svmr', 'svms', 'nb']
+
 
 
 
