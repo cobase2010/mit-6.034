@@ -329,6 +329,11 @@ def sub_lists (l):
             lists.append(l[j: i])
     return lists
 
+def get_subsets(fullset):
+    listrep = list(fullset)
+    n = len(listrep)
+    return [[listrep[k] for k in range(n) if i&1<<k] for i in range(2**n)]
+
 if __name__ == "__main__":
     # dataset = "H004"
     dataset = "breast-cancer"
@@ -337,23 +342,28 @@ if __name__ == "__main__":
     print "Boosting with our suite of orange classifiers:"
     print ("  accuracy: %.3f, brier: %.3f, auc: %.3f" %
            boosted_ensemble(dataset, learners, DATASET_STANDARDS[dataset]))
-    # best_accuracy = 0
-    # best_classifiers = []
-    # for sublist in sub_lists(classifiers_for_best_ensemble2):
-    #     print("Testing subset", sublist)
-    #     subset = {}
-    #     for shortname in sublist:
-    #         subset[shortname] = learners[shortname]
-    #     accuracy, brier, auc = \
-    #         boosted_ensemble("breast-cancer", subset,
-    #                         DATASET_STANDARDS["breast-cancer"])
-    #     if accuracy > best_accuracy:
-    #         best_accuracy = accuracy
-    #         best_classifiers = sublist
-    #     print "Boosting with subset of orange classifiers:"
-    #     print ("  accuracy: %.3f, brier: %.3f, auc: %.3f" % (accuracy, brier, auc))
+    best_accuracy = 0
+    best_classifiers = []
+    count = 0
+    for sublist in get_subsets(classifiers_for_best_ensemble2):
+        if sublist == []:
+            continue
+        count += 1
+        print(count, "Testing subset", sublist)
+        subset = {}
+        for shortname in sublist:
+            subset[shortname] = learners[shortname]
+        accuracy, brier, auc = \
+            boosted_ensemble("breast-cancer", subset,
+                            DATASET_STANDARDS["breast-cancer"])
+        if accuracy > best_accuracy:
+            best_accuracy = accuracy
+            best_classifiers = sublist
+        print "Boosting with subset of orange classifiers:"
+        print ("  accuracy: %.3f, brier: %.3f, auc: %.3f" % (accuracy, brier, auc))
+        print("++++Best so far: ", best_accuracy)
     
-    # print("Best classifiers", best_classifiers, "with accuracy", best_accuracy)
+    print(count, "Best classifiers", best_classifiers, "with accuracy", best_accuracy)
 
 
 # Play with the datasets mentioned above.  What ensemble of classifiers

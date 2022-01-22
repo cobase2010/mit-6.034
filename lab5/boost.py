@@ -277,9 +277,9 @@ class BoostClassifier(Classifier):
         """
         for i, (weight, datum) in enumerate(zip(self.data_weights, self.data)):
             if best_classifier.classify(datum) == self.standard.classify(datum):
-                self.data_weights[i] = 0.5 * (1 / (1 - best_error)) * weight
+                self.data_weights[i] = 0.5 * (1.0 / (1 - best_error)) * weight
             else:
-                self.data_weights[i] = (0.5 * 1 / best_error) * weight
+                self.data_weights[i] = (0.5 * 1.0 / best_error) * weight
 
     def __str__(self):
         classifier_part = '\n'.join(["%4.4f: %s" % (weight, c) for c, weight in
