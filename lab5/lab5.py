@@ -8,6 +8,8 @@ from boost import *
 from orange_for_6034 import *
 from neural_net_data import *
 import Orange
+from Orange.classification import svm
+from Orange.evaluation import testing, scoring
 import neural_net
 
 SVM_TYPE = orange.SVMLearner.C_SVC
@@ -210,12 +212,13 @@ learners = {
     "svml": orange.SVMLearner(kernel_type = orange.SVMLearner.Linear,
                               probability = True, svm_type=SVM_TYPE),
     "svmp3":orange.SVMLearner(kernel_type = orange.SVMLearner.Polynomial,
-                              degree = 3,
+                              degree = 5,
                               probability = True, svm_type=SVM_TYPE),
     "svmr": orange.SVMLearner(kernel_type = orange.SVMLearner.RBF,
-                              probability = True, svm_type=SVM_TYPE),
+                              probability = True, svm_type=SVM_TYPE, shrinking=True),
     "svms": orange.SVMLearner(kernel_type = orange.SVMLearner.Sigmoid,
                               probability = True, svm_type=SVM_TYPE),
+    "svm": svm.SVMLearner(),
     "nb": orange.BayesLearner(),
     # "nn": Orange.classification.neural.NeuralNetworkLearner(),
     # "nn": orangeSNNS.SNNSLearner(name = 'SNNS neural network',
@@ -239,10 +242,17 @@ learners["svmp3"].name = "Support Vector Machine classifier with degree 3 polyno
 learners["svmr"].name = "Support Vector Machine classifier with radial basis kernel"
 learners["svms"].name = "Support Vector Machine classifier with sigmoid kernel"
 learners["nb"].name = "Naive Bayes classifier"
+learners["svm"].name = "svm"
 # learners["nn"].name = "Neural network"
 
 #FIXME: learners["034b"].name = "Our boosting classifier for party id datasets"
 #learners["boost"].name = "Boosted decision trees classifier"
+
+breast_cancer = Orange.data.Table("breast-cancer.tab")
+
+# svm_learner = learners["svm"]
+# svm_learner = svm.SVMLearner(name="svm")
+learners["svm"].tune_parameters(breast_cancer, parameters=["gamma"], folds=10)
 
 
 # if __name__ == "__main__":
@@ -319,7 +329,8 @@ DATASET_STANDARDS={
     "adult" : OrangeStandardClassifier(">50K") # this is big -- optional!
     }
 
-classifiers_for_best_ensemble2 = ['maj', 'dt', 'knn', 'svml', 'svmp3', 'svmr', 'svms', 'nb']
+classifiers_for_best_ensemble2 = ['maj', 'dt', 'knn', 'svml', 'svmp3', 'svmr', 'svms', 'nb', 'svm']
+sub_classifiers = ['svm', 'svml', 'svmp3', 'svmr', 'svms', 'nb']
 
 # function to generate all the sub lists without empty list
 def sub_lists (l):
@@ -337,11 +348,28 @@ def get_subsets(fullset):
 if __name__ == "__main__":
     # dataset = "H004"
     dataset = "breast-cancer"
+
+    breast_cancer = Orange.data.Table("breast-cancer.tab")
+
+    svm_learner = learners["svm"]
+    # svm_learner = svm.SVMLearner(name="svm")
+    svm_learner.tune_parameters(breast_cancer, parameters=["gamma"], folds=10)
     
-    # describe_and_classify(dataset, learners)
+    describe_and_classify(dataset, learners)
     print "Boosting with our suite of orange classifiers:"
     print ("  accuracy: %.3f, brier: %.3f, auc: %.3f" %
            boosted_ensemble(dataset, learners, DATASET_STANDARDS[dataset]))
+
+    # subset = {}
+    # for shortname in sub_classifiers:
+    #     subset[shortname] = learners[shortname]
+    # accuracy, brier, auc = \
+    #     boosted_ensemble("breast-cancer", subset,
+    #                     DATASET_STANDARDS["breast-cancer"])
+    # print "Boosting with subset of orange classifiers:"
+    # print ("  accuracy: %.3f, brier: %.3f, auc: %.3f" % (accuracy, brier, auc))
+
+    # Brute force search of optimal subset
     best_accuracy = 0
     best_classifiers = []
     count = 0
@@ -372,7 +400,8 @@ if __name__ == "__main__":
 
 
 
-classifiers_for_best_ensemble = ['svml', 'svmp3', 'svmr', 'svms', 'nb']
+classifiers_for_best_ensemble = ['svm', 'svml', 'svmp3', 'svmr', 'svms', 'nb']
+# classifiers_for_best_ensemble = ['svmp3','nb']
 
 
 
